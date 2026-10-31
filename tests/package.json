@@ -1,0 +1,14 @@
+{
+  "name": "cronicas-de-aurora-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Regressão de navegador para Crônicas de Aurora",
+  "scripts": {
+    "test": "node run.js",
+    "test:smoke": "node smoke.js",
+    "test:combat": "node combat.js"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
+  }
+}

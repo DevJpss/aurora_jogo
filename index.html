@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#0b0814">
+  <title>Crônicas de Aurora — MMORPG</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0814'/%3E%3Ctext x='16' y='23' font-size='20' font-family='serif' fill='%23f2b84b' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================ BOOT ============================ -->
+  <div id="boot" class="screen active">
+    <div class="boot-sigil">
+      <div class="sigil-ring"></div>
+      <div class="sigil-ring r2"></div>
+      <div class="sigil-core">A</div>
+    </div>
+    <h1 class="boot-title">CRÔNICAS DE <span>AURORA</span></h1>
+    <p class="boot-sub">Um mundo inteiro espera por você</p>
+    <div class="boot-bar"><div id="bootFill"></div></div>
+    <div id="bootStatus" class="boot-status">Acordando os servidores…</div>
+    <div id="bootTip" class="boot-tip"></div>
+  </div>
+
+  <!-- ============================ TÍTULO ============================ -->
+  <div id="title" class="screen">
+    <canvas id="titleCanvas"></canvas>
+    <div class="title-vignette"></div>
+    <div class="title-content">
+      <div class="title-logo">
+        <div class="title-kicker">CRÔNICAS DE</div>
+        <h1>AURORA</h1>
+        <div class="title-line"><span></span><i>✦</i><span></span></div>
+        <p class="title-tag">Um MMORPG de fantasia • Temporada 2</p>
+      </div>
+      <div class="title-menu">
+        <button class="btn btn-primary big" data-act="title-play"><span>Jogar</span><small>Entrar em Aurora</small></button>
+        <button class="btn" data-act="title-settings">Configurações</button>
+        <button class="btn" data-act="title-help">Como jogar</button>
+        <button class="btn" data-act="title-credits">Créditos</button>
+      </div>
+      <div class="title-footer">
+        <span>v2.0.0</span>
+        <span class="dot"></span>
+        <span>Servidores simulados localmente</span>
+        <span class="dot"></span>
+        <span id="titleClock"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ LOGIN ============================ -->
+  <div id="login" class="screen">
+    <canvas id="loginCanvas"></canvas>
+    <div class="modal-card login-card">
+      <button class="back-btn" data-act="goto-title">← Voltar</button>
+      <div class="login-head">
+        <div class="mini-logo">✦</div>
+        <h2>Entrar em Aurora</h2>
+        <p>Use um nome de conta local. Seus personagens ficam salvos neste navegador.</p>
+      </div>
+      <label class="field">
+        <span>Nome da conta</span>
+        <input id="loginName" type="text" maxlength="18" autocomplete="off" placeholder="Ex.: Aventureiro" spellcheck="false">
+      </label>
+      <div id="loginError" class="form-error"></div>
+      <button class="btn btn-primary full" data-act="do-login">Entrar</button>
+      <div class="login-note">
+        <b>Sem cadastro.</b> O progresso é salvo no seu navegador (localStorage).
+        Para jogar em outro dispositivo, use Exportar/Importar nas configurações.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ SERVIDORES ============================ -->
+  <div id="servers" class="screen">
+    <div class="topbar">
+      <div class="tb-left">
+        <button class="back-btn" data-act="goto-login">← Conta</button>
+        <div class="tb-account">Conta: <b id="serverAccount">—</b></div>
+      </div>
+      <div class="tb-right">
+        <button class="btn small" data-act="refresh-servers">↻ Atualizar</button>
+      </div>
+    </div>
+    <div class="page-head">
+      <h2>Escolha seu servidor</h2>
+      <p>Servidores diferentes têm personagens separados. O servidor <b>Aurora</b> é o mais populoso.</p>
+    </div>
+    <div id="serverList" class="server-list"></div>
+    <div class="servers-foot">
+      <span class="status-dot online"></span> Online
+      <span class="status-dot busy"></span> Cheio
+      <span class="status-dot maint"></span> Manutenção
+      <span class="spacer"></span>
+      <span>Latência simulada</span>
+    </div>
+  </div>
+
+  <!-- ============================ PERSONAGENS ============================ -->
+  <div id="chars" class="screen">
+    <div class="topbar">
+      <div class="tb-left">
+        <button class="back-btn" data-act="goto-servers">← Servidores</button>
+        <div class="tb-account">Servidor: <b id="charServer">—</b></div>
+      </div>
+      <div class="tb-right"><span id="charSlotsInfo" class="muted"></span></div>
+    </div>
+    <div class="page-head">
+      <h2>Seus personagens</h2>
+      <p>Escolha um herói ou crie um novo. São 3 espaços por servidor.</p>
+    </div>
+    <div id="charList" class="char-list"></div>
+  </div>
+
+  <!-- ============================ CRIAÇÃO ============================ -->
+  <div id="create" class="screen">
+    <div class="topbar">
+      <div class="tb-left">
+        <button class="back-btn" data-act="goto-chars">← Personagens</button>
+        <div class="tb-account">Criando em: <b id="createServer">—</b></div>
+      </div>
+      <div class="tb-right"><span class="muted">3 espaços • 1 personagem por vez</span></div>
+    </div>
+    <div class="create-grid">
+      <div class="create-left">
+        <h2 class="section-title">1. Escolha sua classe</h2>
+        <div id="classCards" class="class-cards"></div>
+        <div id="classSummary" class="class-summary panel-soft"></div>
+      </div>
+      <div class="create-right">
+        <h2 class="section-title">2. Aparência e nome</h2>
+        <div class="create-preview panel-soft">
+          <canvas id="createCanvas" width="240" height="288"></canvas>
+          <div class="preview-name" id="previewName">Sem nome</div>
+          <div class="preview-class" id="previewClass">Guerreiro</div>
+        </div>
+        <label class="field">
+          <span>Nome do personagem</span>
+          <div class="input-row">
+            <input id="charName" type="text" maxlength="14" autocomplete="off" placeholder="Nome do herói" spellcheck="false">
+            <button class="btn small" data-act="random-name" title="Nome aleatório">🎲</button>
+          </div>
+        </label>
+        <div class="look-controls">
+          <div class="look-row"><span>Pele</span><div id="skinSwatches" class="swatches"></div></div>
+          <div class="look-row"><span>Cabelo</span><div id="hairSwatches" class="swatches"></div></div>
+          <div class="look-row"><span>Estilo</span><div id="styleSwatches" class="swatches"></div></div>
+          <div class="look-row"><span>Traje</span><div id="outfitSwatches" class="swatches"></div></div>
+        </div>
+        <div id="createError" class="form-error"></div>
+        <div class="create-actions">
+          <button class="btn" data-act="goto-chars">Cancelar</button>
+          <button class="btn btn-primary" data-act="create-char">Criar personagem ✦</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ JOGO ============================ -->
+  <div id="game" class="screen">
+    <canvas id="world"></canvas>
+
+    <div id="hud">
+      <!-- jogador -->
+      <div class="hud-left">
+        <div class="player-frame panel">
+          <div class="pf-portrait"><canvas id="hudPortrait" width="64" height="64"></canvas><span id="hudLevel" class="pf-level">1</span></div>
+          <div class="pf-main">
+            <div class="pf-top"><b id="hudName">Herói</b><span id="hudClass">Guerreiro</span></div>
+            <div class="bar hp"><div id="hudHpFill"></div><span id="hudHpText">100/100</span></div>
+            <div class="bar mp"><div id="hudMpFill"></div><span id="hudMpText">30/30</span></div>
+            <div class="bar st" title="Vigor — usado pela esquiva (V)"><div id="hudStFill"></div><span id="hudStText">100/100</span></div>
+            <div class="bar xp"><div id="hudXpFill"></div><span id="hudXpText">0%</span></div>
+          </div>
+        </div>
+        <div class="player-sub panel">
+          <span class="gold"><img data-icon="coin" alt=""> <b id="hudGold">0</b></span>
+          <span class="hud-power" title="Poder de combate">⚔ <b id="hudPower">0</b></span>
+          <span class="hud-server" id="hudServer">Aurora</span>
+        </div>
+        <div id="hudBuffs" class="buff-row"></div>
+      </div>
+
+      <!-- topo -->
+      <div class="hud-top panel">
+        <div id="hudZone" class="zone-name">Vila Aurora</div>
+        <div class="hud-top-sub">
+          <span id="hudClock">☀ 12:00</span>
+          <span class="sep">•</span>
+          <span id="hudOnline">0 online</span>
+          <span class="sep">•</span>
+          <span id="hudPing" class="ping">24 ms</span>
+        </div>
+      </div>
+
+      <!-- botões -->
+      <div class="hud-buttons">
+        <button class="hud-btn" data-win="character" title="Personagem (C)"><img data-icon="helmet" alt=""><kbd>C</kbd></button>
+        <button class="hud-btn" data-win="inventory" title="Mochila (I)"><img data-icon="chest" alt=""><kbd>I</kbd></button>
+        <button class="hud-btn" data-win="quests" title="Missões (J)"><img data-icon="scroll" alt=""><kbd>J</kbd><span id="questBadge" class="badge"></span></button>
+        <button class="hud-btn" data-win="skills" title="Habilidades (barra do HOTBAR)"><img data-icon="star" alt=""><kbd>1-4</kbd></button>
+        <button class="hud-btn" data-act="toggle-menu-group" title="Abrir outros menus">☰</button>
+        <button class="hud-btn mobile-only" data-act="toggle-chat" title="Chat">💬</button>
+      </div>
+
+      <!-- rastreador de missão -->
+      <div id="hudQuest" class="hud-quest panel"></div>
+
+      <!-- minimapa -->
+      <div class="hud-map panel">
+        <canvas id="minimap" width="176" height="120"></canvas>
+        <div class="mini-foot"><span id="miniZone">Vila Aurora</span><span id="miniCoords">0, 0</span></div>
+        <button class="map-expand" data-win="map" title="Mapa completo (M)">⤢</button>
+      </div>
+
+      <!-- chat -->
+      <div id="chatPanel" class="chat-panel panel">
+        <div class="chat-head">
+          <div class="chat-tabs" id="chatTabs">
+            <button class="active" data-chat="todos">Todos</button>
+            <button data-chat="geral">Geral</button>
+            <button data-chat="comercio">Comércio</button>
+            <button data-chat="grupo">Grupo</button>
+            <button data-chat="guilda">Guilda</button>
+            <button data-chat="sistema">Sistema</button>
+          </div>
+          <button class="chat-min" data-act="toggle-chat" title="Minimizar chat">▾</button>
+        </div>
+        <div id="chatList" class="chat-list"></div>
+        <div class="chat-input-row">
+          <span class="chat-prefix" id="chatPrefix">[Geral]</span>
+          <input id="chatInput" type="text" maxlength="120" autocomplete="off" placeholder="Digite uma mensagem e pressione Enter…" spellcheck="false">
+        </div>
+      </div>
+
+      <!-- barra de habilidades -->
+      <div class="action-bar">
+        <button id="autoHuntBtn" class="auto-hunt-btn" data-act="toggle-auto-hunt" title="Auto-caça: busca alvo, persegue, usa habilidades e coleta (R)">
+          <span class="ah-label">AUTO</span>
+          <small class="ah-state">OFF</small>
+          <kbd>R</kbd>
+        </button>
+        <div id="skillBar" class="skill-bar"></div>
+        <div class="potion-bar">
+          <button class="potion-slot" data-act="potion-hp" title="Poção de Vida (5)"><img data-icon="potion_hp" alt=""><kbd>5</kbd><span id="potionHpCount">0</span></button>
+          <button class="potion-slot" data-act="potion-mp" title="Poção de Mana (6)"><img data-icon="potion_mp" alt=""><kbd>6</kbd><span id="potionMpCount">0</span></button>
+        </div>
+        <div class="potion-config">
+          <div class="potion-cfg-row">
+            <span>Poção HP</span>
+            <input type="checkbox" data-setting="autoPotionHp" title="Usar poção de vida automaticamente">
+            <input type="range" min="5" max="90" step="5" value="50" data-setting="autoPotionHpPct" title="Usar poção de vida ao chegar a % da vida">
+            <span class="sv" id="autoPotionHpVal">50%</span>
+          </div>
+          <div class="potion-cfg-row">
+            <span>Poção MP</span>
+            <input type="checkbox" data-setting="autoPotionMp" title="Usar poção de mana automaticamente">
+            <input type="range" min="5" max="90" step="5" value="30" data-setting="autoPotionMpPct" title="Usar poção de mana ao chegar a % da mana">
+            <span class="sv" id="autoPotionMpVal">30%</span>
+          </div>
+        </div>
+        <button id="dodgeBtn" class="dodge-slot" data-act="dodge" title="Esquiva (V) — gasta 25 de vigor e concede 0,22s de invulnerabilidade">
+          <span class="dg-icon">➤</span><small>V</small><b id="dodgeCd"></b>
+        </button>
+      </div>
+
+      <div id="interactHint" class="interact-hint hidden"><kbd>E</kbd> <span id="interactText">Falar</span></div>
+      <div id="zoneBanner" class="zone-banner"></div>
+    </div>
+
+    <div id="windows"></div>
+    <div id="toasts"></div>
+    <div id="tooltip" class="tooltip hidden"></div>
+
+    <div id="death" class="death-overlay hidden">
+      <div class="death-card">
+        <div class="death-skull">☠</div>
+        <h2>Você caiu</h2>
+        <p id="deathText">A escuridão o envolveu… mas Aurora ainda precisa de você.</p>
+        <div class="death-actions">
+          <button class="btn btn-primary" data-act="respawn">Renascer na vila</button>
+        </div>
+        <small>Você perde 10% do ouro e volta ao ponto de viagem mais próximo.</small>
+      </div>
+    </div>
+
+    <div id="mobile" class="mobile-controls">
+      <div id="joystick" class="joystick"><div id="stick" class="stick"></div></div>
+      <div class="mobile-actions">
+        <button data-act="mobile-attack" class="mob-btn atk">⚔</button>
+        <button data-act="dodge" class="mob-btn dodge" title="Esquiva">➤</button>
+        <button data-act="toggle-auto-hunt" class="mob-btn auto" title="Auto-caça"><span class="mob-auto-label">AUTO</span></button>
+        <button data-act="mobile-interact" class="mob-btn">E</button>
+        <button data-act="potion-hp" class="mob-btn small">🧪</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/systems.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

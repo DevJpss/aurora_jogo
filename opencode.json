@@ -1,0 +1,60 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "google/gemini-3.1-flash-lite",
+  "provider": {
+    "groq": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Groq",
+      "options": {
+        "baseURL": "https://api.groq.com/openai/v1",
+        "apiKey": "{env:GROQ_API_KEY}"
+      },
+      "models": {
+        "openai/gpt-oss-120b": {
+          "name": "GPT OSS 120B"
+        },
+        "qwen/qwen3.8-27b": {
+          "name": "Qwen 3.8 27B"
+        }
+      }
+    }
+  },
+  "agent": {
+    "build": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Implementa e entrega mudanças para Crônicas de Aurora com testes e qualidade."
+    },
+    "architect": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Arquiteto técnico e planejador de evolução para Crônicas de Aurora."
+    },
+    "gameplay": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em combate, automação, progresso e RPG para Crônicas de Aurora."
+    },
+    "world-ui": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em mundo, Canvas 2D, arte procedural e interface para Crônicas de Aurora."
+    },
+    "balance": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em balanceamento, economia, raridades e progressão para Crônicas de Aurora."
+    },
+    "save-data": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em save versionado, migração e backup para Crônicas de Aurora."
+    },
+    "qa": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em QA, testes e regressão para Crônicas de Aurora."
+    },
+    "performance": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em performance, Canvas, renderização e memória para Crônicas de Aurora."
+    },
+    "online-architecture": {
+      "model": "google/gemini-3.1-flash-lite",
+      "description": "Especialista em arquitetura online futura para Crônicas de Aurora."
+    }
+  }
+}
