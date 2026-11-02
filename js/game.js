@@ -4143,6 +4143,31 @@ G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; 
       });
     });
 
+    // Manifestação indireta (Etapa 6): figura distante, sem identificação.
+    try {
+      const p = G.player;
+      if (p && p.story && p.story.flags && p.story.flags.arc1_investigando) {
+        const hour = (G.worldClock || 0) / 3600;
+        if (hour >= 19 && hour < 21) {
+          const zone = A.world.zoneAt(Math.floor(p.x / T), Math.floor(p.y / T));
+          if (zone === 'vila' || true) {
+            const fx = 75 * T + 16, fy = 48 * T + 16;
+            if (fx > camX - 50 && fx < camX + VW + 50 && fy > camY - 50 && fy < camY + VH + 50) {
+              addD(fy, () => {
+                ctx.save();
+                ctx.globalAlpha = 0.18;
+                ctx.fillStyle = '#c9c4d6';
+                ctx.beginPath(); ctx.ellipse(fx, fy, 7, 22, 0, 0, 6.283); ctx.fill();
+                ctx.globalAlpha = 0.08;
+                ctx.beginPath(); ctx.ellipse(fx, fy - 10, 12, 12, 0, 0, 6.283); ctx.fill();
+                ctx.restore();
+              });
+            }
+          }
+        }
+      }
+    } catch (e) { /* ignora */ }
+
     // animais (Etapa 5)
     (A.ANIMALS || []).forEach(a => {
       const pos = G.animalPos(a.id);

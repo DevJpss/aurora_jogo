@@ -62,6 +62,60 @@
     }
   };
 
+  A.DIALOGUES.marta = {
+    start: {
+      text: 'Ouvi passos e sussurros na praça ao anoitecer. Não era vento, tenho certeza.',
+      options: [
+        { label: 'O que você ouviu?', next: 'detalhe' },
+        { label: 'Talvez seja só o vento.', next: 'vento' },
+        { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros', changeRelation: 1 } }
+      ]
+    },
+    detalhe: {
+      text: 'Uma luz fraca, quase como brasa, mas fria. Sumiu quando me aproximei.',
+      options: [
+        { label: 'Vou observar hoje à noite.', next: 'start', effect: { startQuest: 'arc1_q1', learn: 'sussurros_praca' } },
+        { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros' } }
+      ]
+    },
+    vento: {
+      text: 'Talvez. Mas o vento não olha para nós.',
+      options: [
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    }
+  };
+
+  A.DIALOGUES.irene = {
+    start: {
+      text: 'Guardo registros antigos. Alguns nomes se repetem em sonhos que as pessoas relatam.',
+      options: [
+        { label: 'Que registros?', next: 'registros' },
+        { label: 'Que sonhos?', next: 'sonhos' },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    registros: {
+      text: 'Cinco nomes aparecem em um pergaminho empoeirado. Não sei quem eram, mas não eram da vila.',
+      options: [
+        { label: 'Posso ver o pergaminho?', next: 'pergaminho' },
+        { label: 'Encerrar conversa.', end: true, effect: { startQuest: 'arc1_q3' } }
+      ]
+    },
+    sonhos: {
+      text: 'Pessoas dizem ouvir vozes que prometem um mundo melhor. Não sei se são sonhos ou algo mais.',
+      options: [
+        { label: 'Encerrar conversa.', end: true, effect: { learn: 'cinco_vozes_rumor', npc: 'irene' } }
+      ]
+    },
+    pergaminho: {
+      text: 'O pergaminho está gasto, mas os cinco nomes permanecem. Eles podem ser pistas, ou apenas ecos.',
+      options: [
+        { label: 'Obrigado, Irene.', next: 'start', effect: { startQuest: 'arc1_q3', learn: 'cinco_nomes_registro', npc: 'irene' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    }
+  };
   const D = {};
 
   function ensureStory(p) {

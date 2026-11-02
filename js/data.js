@@ -236,11 +236,11 @@ window.A = window.A || {};
     schedule: [ { from: 5, to: 17, x: 56, y: 60 }, { from: 17, to: 5, x: 58, y: 56 } ] },
   { id: 'nilo', name: 'Nilo', role: 'Mensageiro', x: 70, y: 52, look: { outfit: '#4a7a9a', skin: '#e8c8a8', hair: '#d8e8f4', hat: '#2a4a6a' }, marker: 'quest', kind: 'citizen',
     schedule: [ { from: 6, to: 12, x: 70, y: 52 }, { from: 12, to: 18, x: 76, y: 46 }, { from: 18, to: 6, x: 72, y: 54 } ] },
-  { id: 'marta', name: 'Marta', role: 'Estalajadeira', x: 56, y: 39, look: { outfit: '#9a6a4a', skin: '#f0c9a0', hair: '#6a3a1a', apron: true }, marker: 'shop', kind: 'citizen',
+  { id: 'marta', name: 'Marta', role: 'Estalajadeira', x: 56, y: 39, look: { outfit: '#9a6a4a', skin: '#f0c9a0', hair: '#6a3a1a', apron: true }, marker: 'shop', kind: 'citizen', dialogueId: 'marta',
     schedule: [ { from: 9, to: 22, x: 56, y: 39 }, { from: 22, to: 9, x: 58, y: 42 } ] },
   { id: 'breno', name: 'Breno', role: 'Carpinteiro', x: 88, y: 55, look: { outfit: '#7a5a3a', skin: '#d9a077', hair: '#3a2a1a', beard: '#3a2a1a' }, marker: 'train', kind: 'citizen',
     schedule: [ { from: 7, to: 17, x: 88, y: 55 }, { from: 17, to: 7, x: 86, y: 52 } ] },
-  { id: 'irene', name: 'Irene', role: 'Parteira', x: 70, y: 48, look: { outfit: '#6a5a7a', skin: '#f6d7b0', hair: '#c4c4c4', robe: true }, marker: 'heal', kind: 'citizen' },
+  { id: 'irene', name: 'Irene', role: 'Parteira', x: 70, y: 48, look: { outfit: '#6a5a7a', skin: '#f6d7b0', hair: '#c4c4c4', robe: true }, marker: 'heal', kind: 'citizen', dialogueId: 'irene' },
   { id: 'caio', name: 'Caio', role: 'Aprendiz', x: 82, y: 46, look: { outfit: '#5a4a3a', skin: '#e8c8a8', hair: '#2a1a0a' }, marker: 'train', kind: 'citizen',
     schedule: [ { from: 7, to: 17, x: 82, y: 46 }, { from: 17, to: 7, x: 80, y: 48 } ] },
   { id: 'rosa', name: 'Rosa', role: 'Curandeira', x: 65, y: 46, look: { outfit: '#a67a6a', skin: '#f2c9a0', hair: '#8a4a22', robe: true }, marker: 'heal', kind: 'citizen',
@@ -457,6 +457,31 @@ window.A = window.A || {};
     { id: 's_goblin', title: 'Caçada: Goblins',  type: 'kill', target: 'goblin', need: 8,  desc: 'Derrote 8 Goblins.', rewards: { gold: 190, xp: 220 } },
     { id: 's_skel',   title: 'Caçada: Esqueletos', type: 'kill', target: 'skeleton', need: 8, desc: 'Derrote 8 Esqueletos.', rewards: { gold: 260, xp: 340 } },
     { id: 's_wraith', title: 'Caçada: Espectros', type: 'kill', target: 'wraith', need: 6, desc: 'Derrote 6 Espectros.', rewards: { gold: 340, xp: 500 } }
+  ];
+
+  // Primeiro arco narrativo (Etapa 6). Missões de história, não diárias.
+  A.STORY_QUESTS = [
+    { id: 'arc1_q1', title: 'Sussurros na Praça', giver: 'marta', type: 'talk', need: 1, target: '', zone: 'vila',
+      desc: 'Marta ouviu sussurros na praça ao anoitecer. Fale com ela.',
+      stages: [
+        { id: 'arc1_q1_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'marta', desc: 'Fale com Marta sobre os sussurros.' },
+        { id: 'arc1_q1_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Observe a praça ao anoitecer.', onComplete: [{ setFlag: 'arc1_investigando' }] }
+      ],
+      reward: { gold: 120, xp: 200 } },
+    { id: 'arc1_q2', title: 'A Luz que não é Fogo', giver: 'liora', type: 'talk', need: 1, target: '', zone: 'vila',
+      desc: 'Liora viu uma luz estranha perto do lago dos campos. Fale com ela.',
+      stages: [
+        { id: 'arc1_q2_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'liora', desc: 'Fale com Liora sobre a luz.' },
+        { id: 'arc1_q2_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Viaje aos Campos Verdes e observe a luz.', onComplete: [{ setFlag: 'arc1_luz_vista' }] }
+      ],
+      reward: { gold: 150, xp: 260 } },
+    { id: 'arc1_q3', title: 'Cinco Nomes no Registro', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila',
+      desc: 'Irene guarda registros antigos. Peça para vê-los.',
+      stages: [
+        { id: 'arc1_q3_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre os registros.' },
+        { id: 'arc1_q3_s2', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Pergunte sobre os cinco nomes.', onComplete: [{ setFlag: 'arc1_cinco_nomes', learn: 'cinco_lideres_rumor', npc: 'irene' }] }
+      ],
+      reward: { gold: 180, xp: 320 } }
   ];
 
   /* ------------------------------------------------------------------ */
