@@ -196,6 +196,42 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     });
     if (finalFlag.flag) ok('conclusão do arco consolida flag de indícios reunidos'); else fail('flag final de arco ausente');
 
+    // Missões arc1_q7 e arc1_q8 cadastradas.
+    const hasArc8 = await page.evaluate(() => ['arc1_q7','arc1_q8'].every(id => !!A.sys.questById(id)));
+    if (hasArc8) ok('missões arc1_q7 e arc1_q8 cadastradas'); else fail('missões novas do arco faltando');
+
+    // Conhecimento eclipse ainda nao conhecido antes de avançar.
+    const knowPremature = await page.evaluate(() => A.sys.hasKnowledge(A.game.player, 'irene', 'eclipse_conflito_antigo'));
+    if (!knowPremature) ok('conhecimento eclipse ainda nao conhecido'); else fail('conhecimento eclipse precoce');
+
+    // Encadeamento arc1_q7 -> arc1_q8.
+    const chain3 = await page.evaluate(() => {
+      const p = A.sys.blankCharacter({ cls: 'warrior', name: 'Chain3', server: 'aurora' });
+      const r8before = A.sys.startQuest(p, 'arc1_q8');
+      if (!p.quests.arc1_q7) p.quests.arc1_q7 = { progress: 0, done: false, claimed: false, stage: 0 };
+      p.quests.arc1_q7.claimed = true;
+      p.quests.arc1_q7.done = true;
+      const r8after = A.sys.startQuest(p, 'arc1_q8');
+      return { r8before, r8after };
+    });
+    if (chain3.r8before === false && chain3.r8after !== false) ok('encadeamento arc1_q7 -> arc1_q8 funciona'); else fail('encadeamento arc1_q8: ' + JSON.stringify(chain3));
+
+    // Consequências arc1_q7 e arc1_q8.
+    const cons2 = await page.evaluate(() => {
+      const p = A.game.player;
+      p.quests['arc1_q7'] = { progress: 1, done: false, claimed: false, stage: 1 };
+      const r7 = A.sys.turnInQuest(p, 'arc1_q7');
+      const flag7 = !!(p.story.flags && p.story.flags.arc1_peso_vila);
+      const mem7 = A.sys.hasMemory(p, 'marta', 'arc1_peso_vila');
+      p.quests['arc1_q8'] = { progress: 1, done: false, claimed: false, stage: 1 };
+      const r8 = A.sys.turnInQuest(p, 'arc1_q8');
+      const flag8 = !!(p.story.flags && p.story.flags.arc1_echo_ruina);
+      const know8 = A.sys.hasKnowledge(p, 'irene', 'eclipse_conflito_antigo');
+      return { r7: !!r7, flag7: flag7, mem7: mem7, r8: !!r8, flag8: flag8, know8: know8 };
+    });
+    if (cons2.flag7 && cons2.mem7) ok('arc1_q7 registra flag e memória'); else fail('arc1_q7 consequências: ' + JSON.stringify(cons2));
+    if (cons2.flag8 && cons2.know8) ok('arc1_q8 registra flag e conhecimento'); else fail('arc1_q8 consequências: ' + JSON.stringify(cons2));
+
     const realErrors = errors.filter(e => !/favicon|ERR_FAILED|net::/i.test(e));
     if (realErrors.length === 0) ok('nenhum erro de página/console');
     else fail('erros no navegador:\n' + realErrors.join('\n'));

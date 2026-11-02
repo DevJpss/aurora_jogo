@@ -507,7 +507,21 @@ window.A = window.A || {};
         { id: 'arc1_q6_s2', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'liora', desc: 'Fale com Liora sobre as descobertas.' },
         { id: 'arc1_q6_s3', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre os registros.', onComplete: [{ setFlag: 'arc1_indicios_reunidos' }] }
       ],
-      reward: { gold: 260, xp: 480 } }
+      reward: { gold: 260, xp: 480 } },
+    { id: 'arc1_q7', title: 'O Peso do Silêncio', giver: 'marta', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q6'] },
+      desc: 'A vila começa a silenciar. Fale com Marta sobre o peso na quietude.',
+      stages: [
+        { id: 'arc1_q7_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'marta', desc: 'Fale com Marta sobre o peso na vila.' },
+        { id: 'arc1_q7_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Observe a praça em silêncio.', onComplete: [{ setFlag: 'arc1_peso_vila' }, { remember: 'arc1_peso_vila', type: 'investigacao', npc: 'marta' }] }
+      ],
+      reward: { gold: 280, xp: 520 } },
+    { id: 'arc1_q8', title: 'Eco na Ruína', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q7'] },
+      desc: 'Os indícios antigos ecoam. Investigue o conflito.',
+      stages: [
+        { id: 'arc1_q8_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre o eco antigo.' },
+        { id: 'arc1_q8_s2', type: 'explore', need: 1, target: 'ruinas', zone: 'ruinas', desc: 'Explore as Ruínas de Solmar e procure o eco.', onComplete: [{ setFlag: 'arc1_echo_ruina' }, { learn: 'eclipse_conflito_antigo', npc: 'irene' }] }
+      ],
+      reward: { gold: 320, xp: 580 } }
   );
   /* ------------------------------------------------------------------ */
   /* CRIAÇÃO                                                             */

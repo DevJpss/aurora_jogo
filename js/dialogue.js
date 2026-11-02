@@ -70,6 +70,7 @@
         { label: 'Talvez seja só o vento.', next: 'vento' },
         { label: 'Voltei sobre os sussurros.', next: 'depois', condition: { hasFlag: 'arc1_investigando' } },
         { label: 'Sobre as descobertas recentes.', next: 'descobertas', condition: { hasFlag: 'arc1_indicios_reunidos' } },
+        { label: 'Ouvir o peso na vila?', next: 'peso', condition: { questDone: 'arc1_q6' } },
         { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros', changeRelation: 1 } }
       ]
     },
@@ -90,6 +91,13 @@
     descobertas: {
       text: 'Os moradores falam de marcas e luzes. Algo antigo parece ter sido esquecido, não apagado.',
       options: [
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    peso: {
+      text: 'A vila está mais quieta. Quase silêncio. O peso daquilo que vem com a aurora.',
+      options: [
+        { label: 'Vou observar a praça.', next: 'start', effect: { startQuest: 'arc1_q7' } },
         { label: 'Encerrar conversa.', end: true }
       ]
     },
@@ -162,6 +170,7 @@
       options: [
         { label: 'Que registros?', next: 'registros' },
         { label: 'Que sonhos?', next: 'sonhos' },
+        { label: 'E os ecos antigos?', next: 'eco', condition: { questDone: 'arc1_q7' } },
         { label: 'Encerrar conversa.', end: true }
       ]
     },
@@ -182,6 +191,20 @@
       text: 'O pergaminho está gasto, mas os cinco nomes permanecem. Eles podem ser pistas, ou apenas ecos.',
       options: [
         { label: 'Obrigado, Irene.', next: 'start', effect: { startQuest: 'arc1_q3', learn: 'cinco_nomes_registro', npc: 'irene' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    eco: {
+      text: 'Os símbolos que guardo... podem ser ecos de um conflito antigo. O silêncio que os cobre.',
+      options: [
+        { label: 'O que aconteceu no conflito?', next: 'eco2' },
+        { label: 'Vou seguir esse eco.', next: 'eco2', effect: { startQuest: 'arc1_q8' } },
+        { label: 'Encerrar conversa.', end: true, effect: { learn: 'eclipse_conflito_antigo', npc: 'irene' } }
+      ]
+    },
+    eco2: {
+      text: 'Não posso ver o que houve. Apenas o eco. A aurora e o silêncio andam juntos.',
+      options: [
         { label: 'Encerrar conversa.', end: true }
       ]
     }
