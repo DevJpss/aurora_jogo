@@ -416,7 +416,7 @@
 
     // Chefes de mundo da campanha. Ficam longe das rotas principais e são
     // reaproveitados pelo rastreamento de missões.
-    spots.push({ type: 'crab_king', x: 12, y: 72, zone: Z.COSTA, boss: true });
+    spots.push({ type: 'crab_king', x: 13, y: 72, zone: Z.COSTA, boss: true });
     spots.push({ type: 'boss_treant', x: 124, y: 18, zone: Z.FLORESTA, boss: true });
     spots.push({ type: 'boss_lodo', x: 141, y: 90, zone: Z.PANTANO, boss: true });
     spots.push({ type: 'boss_ice', x: 176, y: 32, zone: Z.PICOS, boss: true });
