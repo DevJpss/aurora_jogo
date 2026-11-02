@@ -219,7 +219,43 @@ async function writeRaw(buffer, width, height, filename) {
   await sharp(buffer, { raw: { width, height, channels: 4 } }).png().toFile(filename);
 }
 
+async function rebuildDerivedFromSheet() {
+  const loaded = await sharp(SHEET_96).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  if (loaded.info.width !== FRAME_W * 4 || loaded.info.height !== FRAME_H * 4) {
+    throw new Error(`Fonte ausente (${path.basename(SOURCE)}) e spritesheet existente tem dimensoes inesperadas.`);
+  }
+  const sheet96 = loaded.data;
+  const sheet48 = await sharp(sheet96, { raw: { width: FRAME_W * 4, height: FRAME_H * 4, channels: 4 } })
+    .resize(FRAME_W * 2, FRAME_H * 2, { kernel: sharp.kernel.nearest }).raw().toBuffer();
+  const preview = Buffer.alloc(48 * 16 * 64 * 4);
+  for (let index = 0; index < 16; index += 1) {
+    const frame = await sharp(sheet96, { raw: { width: FRAME_W * 4, height: FRAME_H * 4, channels: 4 } })
+      .extract({ left: (index % 4) * FRAME_W, top: Math.floor(index / 4) * FRAME_H, width: FRAME_W, height: FRAME_H })
+      .resize(48, 64, { kernel: sharp.kernel.nearest }).raw().toBuffer();
+    for (let y = 0; y < 64; y += 1) {
+      for (let x = 0; x < 48; x += 1) {
+        const target = pixelIndex(index * 48 + x, y, 48 * 16);
+        const source = pixelIndex(x, y, 48);
+        const checker = ((Math.floor(x / 6) + Math.floor(y / 6)) % 2) ? 205 : 225;
+        preview[target] = checker; preview[target + 1] = checker; preview[target + 2] = checker; preview[target + 3] = 255;
+        if (frame[source + 3] > 0) frame.copy(preview, target, source, source + 4);
+      }
+    }
+    for (let x = 0; x < 48; x += 1) {
+      const target = pixelIndex(index * 48 + x, 62, 48 * 16);
+      preview[target] = 220; preview[target + 1] = 50; preview[target + 2] = 50; preview[target + 3] = 255;
+    }
+  }
+  await writeRaw(sheet48, FRAME_W * 2, FRAME_H * 2, SHEET_48);
+  await writeRaw(preview, 48 * 16, 64, PREVIEW);
+  console.log(`Fonte original ausente; derivados regenerados de ${path.relative(ROOT, SHEET_96)}.`);
+}
+
 async function main() {
+  if (!fs.existsSync(SOURCE)) {
+    await rebuildDerivedFromSheet();
+    return;
+  }
   const input = await sharp(SOURCE).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { data, info } = input;
   cleanBackground(data, info.width, info.height);
