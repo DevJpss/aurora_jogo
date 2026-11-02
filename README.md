@@ -75,7 +75,7 @@ Os menus do jogo são janelas flutuantes e **não fecham umas às outras**:
 ## Conteúdo implementado
 
 - 4 classes com atributos, equipamentos e 4 habilidades próprias.
-- 7 regiões (vila, campos, costa, floresta, ruínas, pântano e cripta) com dia/noite e clima.
+- 9 regiões (vila, campos, costa, floresta, ruínas, pântano, picos de gelo, cripta e cidadela) com dia/noite e clima.
 - Combate action em tempo real, com mira pelo cursor, golpes em cone e projéteis livres.
 - Auto-caça opcional: alvo, perseguição com desvio de obstáculos, habilidades, poções e coleta automáticos.
 - Rastreamento de missões com clique no HUD ou na janela, viagem automática, entrada em masmorra e retorno para entrega.
