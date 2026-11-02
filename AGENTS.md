@@ -35,3 +35,11 @@ O jogo possui fluxo de boot, menu, título, login, servidores simulados, seleç�
 - Manter UI em português brasileiro.
 - Manter saves versionados e seguros.
 - Rodar validações antes de entrega.
+
+## Navegação
+
+- Antes de explorar, leia `PROJECT_MAP.md` (índice no topo: leia só a seção necessária).
+- Prefira busca por símbolo (`Select-String`) a abrir arquivos inteiros.
+- Ao delegar, informe a seção e a faixa de linhas do mapa.
+- Se o mapa divergir do código, o código vence — e o mapa deve ser atualizado.
+- Uma tarefa por branch; só agentes com `edit: allow` alteram arquivos.
