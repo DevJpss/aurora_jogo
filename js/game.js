@@ -4123,7 +4123,7 @@ G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; 
       addD(ny, () => {
         ctx.fillStyle = 'rgba(0,0,0,.22)';
         ctx.beginPath(); ctx.ellipse(nx, ny + 1, 12, 5, 0, 0, 6.283); ctx.fill();
-        ctx.drawImage(spr, nx - 16, ny - 44);
+        A.art.drawAnchored(ctx, spr, nx, ny, 1);
         const bob = Math.sin(G.time * 2 + n.x) * 2;
         const mark = n.marker === 'quest' ? '!' : n.marker === 'shop' ? '⚖' : n.marker === 'heal' ? '✚' : n.marker === 'bank' ? '⛁' : n.marker === 'dungeon' ? '☠' : n.marker === 'board' ? '📋' : '✦';
         ctx.font = 'bold 15px Segoe UI';
@@ -4209,7 +4209,7 @@ G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; 
       addD(b.y, () => {
         ctx.fillStyle = 'rgba(0,0,0,.22)';
         ctx.beginPath(); ctx.ellipse(b.x, b.y + 1, 11, 4, 0, 0, 6.283); ctx.fill();
-        ctx.drawImage(spr, b.x - 16, b.y - 44);
+        A.art.drawAnchored(ctx, spr, b.x, b.y, 1);
         ctx.font = '9.5px Segoe UI'; ctx.textAlign = 'center';
         ctx.fillStyle = '#8fb8ff'; ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.lineWidth = 3;
         ctx.strokeText(b.name, b.x, b.y - 50);
@@ -4269,7 +4269,7 @@ G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; 
         ctx.beginPath(); ctx.ellipse(G.player.x, G.player.y, 20, 8, 0, 0, 6.283); ctx.fill();
         ctx.globalAlpha = 1;
       }
-      ctx.drawImage(pSpr, G.player.x - 16, G.player.y - 44);
+      A.art.drawAnchored(ctx, pSpr, G.player.x, G.player.y, 1);
       ctx.font = '10px Segoe UI'; ctx.textAlign = 'center';
       ctx.fillStyle = '#f2dca0'; ctx.strokeStyle = 'rgba(0,0,0,.85)'; ctx.lineWidth = 3;
       ctx.strokeText(G.player.name, G.player.x, G.player.y - 51);

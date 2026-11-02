@@ -671,7 +671,9 @@
   }
 
   /* --------------------------- personagens --------------------------- */
+  const SPRITE_META = new WeakMap();
   const ACTOR_CACHE = new Map();
+  const ACTOR_HD_CACHE = new Map();
 
   const SKINS = ['#f6d7b0', '#e8b98a', '#c98f6a', '#9a6142', '#6b4028'];
   const HAIRS = ['#f2c14e', '#e9e9f4', '#8a4a22', '#2a2a2a', '#c46a3a', '#7f5ad8', '#4a8bea', '#d94a6a'];
@@ -679,6 +681,19 @@
   A.LOOKS = { SKINS, HAIRS, OUTFITS };
 
   function actorSprite(look, cls, dir, frame) {
+    const hd = A.HD_WARRIOR;
+    if (cls === 'warrior' && hd && hd.state === 'ready') {
+      const hdKey = (dir === 3 ? 3 : dir) + '|' + frame;
+      if (ACTOR_HD_CACHE.has(hdKey)) return ACTOR_HD_CACHE.get(hdKey);
+      const d = dir === 3 ? 3 : dir;
+      const c = A.spr(48, 64, (g) => {
+        g.imageSmoothingEnabled = false;
+        g.drawImage(hd.image, frame * 96, d * 128, 96, 128, 0, 0, 48, 64);
+      });
+      SPRITE_META.set(c, { source: 'warrior-hd', anchorX: 24, anchorY: 62 });
+      ACTOR_HD_CACHE.set(hdKey, c);
+      return c;
+    }
     const key = [look.skin, look.hair, look.hairStyle, look.outfit, look.accent, cls, dir, frame].join('|');
     if (ACTOR_CACHE.has(key)) return ACTOR_CACHE.get(key);
 
@@ -845,6 +860,14 @@
     return c;
   }
 
+  function drawAnchored(ctx, sprite, x, y, scale) {
+    const s = scale == null ? 1 : scale;
+    const meta = SPRITE_META.get(sprite);
+    const anchorX = meta ? meta.anchorX : sprite.width / 2;
+    const anchorY = meta ? meta.anchorY : sprite.height;
+    ctx.drawImage(sprite, x - anchorX * s, y - anchorY * s, sprite.width * s, sprite.height * s);
+  }
+
   function portrait(look, cls) {
     const src = actorSprite(look, cls, 0, 0);
     const c = A.spr(72, 72, (g) => {
@@ -852,7 +875,8 @@
       grd.addColorStop(0, '#2c2340'); grd.addColorStop(1, '#150f24');
       g.fillStyle = grd; g.fillRect(0, 0, 72, 72);
       circle(g, 'rgba(242,184,75,.08)', 36, 40, 30);
-      g.save(); g.translate(4, 6); g.scale(2, 2); g.drawImage(src, 0, 0); g.restore();
+      const scale = Math.min(68 / src.width, 68 / src.height);
+      drawAnchored(g, src, 36, 66, scale);
       g.strokeStyle = '#d9a23f'; g.lineWidth = 2; g.strokeRect(1, 1, 70, 70);
     });
     return c;
@@ -1438,12 +1462,16 @@
     icon: iconCanvas,
     iconURL,
     buildMinimap,
+    drawAnchored,
     white(src) {
-      return A.spr(src.width, src.height, (g) => {
+      const result = A.spr(src.width, src.height, (g) => {
         g.drawImage(src, 0, 0);
         g.globalCompositeOperation = 'source-in';
         g.fillStyle = '#ffffff'; g.fillRect(0, 0, src.width, src.height);
       });
+      const meta = SPRITE_META.get(src);
+      if (meta) SPRITE_META.set(result, { source: meta.source, anchorX: meta.anchorX, anchorY: meta.anchorY });
+      return result;
     }
   };
 
