@@ -26,6 +26,8 @@
 
   G.time = 0;
   G.worldClock = 8 * 3600;
+  G.npcState = {};
+  G._npcReplanTimer = 0;
   G.dayLen = 900;
   G.settings = Object.assign({}, DEFAULTS);
   G.accounts = {};
@@ -403,6 +405,7 @@
     G.worldClock = 8 * 3600;
     G.combat = 0;
     G.nearNpc = null; G.nearNode = null; G.nearPortal = null; G.nearExit = null;
+G.npcState = {}; G._npcReplanTimer = 0;
 
     if (p.map === 'cripta') {
       A.world.enter(A.world.dungeon);
@@ -856,6 +859,7 @@
     G.updateTraps(dt);
     G.updateLoot(dt);
     G.updateNodes(dt);
+    G.updateNpcs(dt);
     G.updateInteractables();
     G.updateQuestTrack(dt);
     G.updateRegen(dt);
@@ -2663,7 +2667,9 @@
   G.npcAt = function (wx, wy) {
     for (const n of A.NPCS) {
       if (n.prop) continue;
-      if (Math.abs(wx - (n.x * T + 16)) < 26 && Math.abs(wy - (n.y * T + 18)) < 34) return n;
+      const pos = G.npcPos(n.id);
+      if (!pos) continue;
+      if (Math.abs(wx - pos.x) < 26 && Math.abs(wy - pos.y) < 34) return n;
     }
     return null;
   };
@@ -3179,6 +3185,115 @@
     });
   };
 
+  /* ------------------------------------------------------------------ */
+  /* NPCS DINÂMICOS (Etapa 1)                                            */
+  /* ------------------------------------------------------------------ */
+  G.npcScheduleDest = function (n) {
+    const sched = (n && n.schedule) || [];
+    if (!sched.length) return { x: n.x, y: n.y };
+    const hour = (G.worldClock || 0) / 3600;
+    for (let i = 0; i < sched.length; i++) {
+      const s = sched[i];
+      const from = (s.from == null) ? 0 : s.from;
+      const to = (s.to == null) ? 24 : s.to;
+      let active;
+      if (from < to) active = hour >= from && hour < to;
+      else active = hour >= from || hour < to;
+      if (active) return { x: s.x, y: s.y };
+    }
+    return { x: sched[0].x, y: sched[0].y };
+  };
+
+  G.npcPos = function (id) {
+    const n = A.NPCS.find(x => x.id === id);
+    if (!n) return null;
+    if (n.schedule && n.schedule.length) {
+      if (!G.npcState[id]) {
+        const w = G.nearestWalkableTile(n.x, n.y, 6);
+        const sx = w ? (w.x * T + 16) : (n.x * T + 16);
+        const sy = w ? (w.y * T + 18) : (n.y * T + 18);
+        G.npcState[id] = { x: sx, y: sy, path: [], pi: 0, dest: null, destKey: null, moving: false, speed: 55 };
+      }
+      const st = G.npcState[id];
+      return { x: st.x, y: st.y };
+    }
+    return { x: n.x * T + 16, y: n.y * T + 18 };
+  };
+
+  G.updateNpcs = function (dt) {
+    if (!dt || dt <= 0) dt = 0.016;
+    if (A.world.isDungeon()) return;
+    G._npcReplanTimer = (G._npcReplanTimer || 0) + dt;
+    const replan = G._npcReplanTimer >= 0.1;
+    if (replan) G._npcReplanTimer = 0;
+
+    A.NPCS.forEach(n => {
+      if (n.prop || !n.schedule || !n.schedule.length) return;
+      let st = G.npcState[n.id];
+      if (!st) {
+        const w0 = G.nearestWalkableTile(n.x, n.y, 6);
+        const sx0 = w0 ? (w0.x * T + 16) : (n.x * T + 16);
+        const sy0 = w0 ? (w0.y * T + 18) : (n.y * T + 18);
+        st = { x: sx0, y: sy0, path: [], pi: 0, dest: null, destKey: null, moving: false, speed: 55 };
+        G.npcState[n.id] = st;
+      }
+
+      if (replan) {
+        const dTile = G.npcScheduleDest(n);
+        const w = G.nearestWalkableTile(dTile.x, dTile.y, 6);
+        const dx = w ? w.x : dTile.x;
+        const dy = w ? w.y : dTile.y;
+        const key = dx + ',' + dy;
+        if (key !== st.destKey) {
+          st.destKey = key;
+          st.dest = { x: dx * T + 16, y: dy * T + 18 };
+          st.path = [];
+          st.pi = 0;
+          st.moving = true;
+        }
+      }
+      if (!st.dest || !st.moving) return;
+
+      const dd = Math.hypot(st.dest.x - st.x, st.dest.y - st.y);
+      if (dd < 6) {
+        st.x = st.dest.x; st.y = st.dest.y;
+        st.moving = false; st.path = []; st.pi = 0;
+        return;
+      }
+
+      if (!st.path || st.path.length === 0) {
+        st.path = G.findPath(st.x, st.y, st.dest.x, st.dest.y);
+        st.pi = 0;
+        if (!st.path || st.path.length === 0) st.path = [{ x: st.dest.x, y: st.dest.y }];
+      }
+      if (!st.path || st.path.length === 0) return;
+
+      let remaining = st.speed * dt;
+      while (remaining > 0 && st.pi < st.path.length) {
+        const pt = st.path[st.pi];
+        const dx = pt.x - st.x, dy = pt.y - st.y;
+        const d = Math.hypot(dx, dy);
+        if (d < 1) { st.pi++; continue; }
+        const step = Math.min(remaining, d);
+        const nx = st.x + (dx / d) * step;
+        const ny = st.y + (dy / d) * step;
+        if (!G.canStand(nx, ny, 5)) {
+          st.path = []; st.pi = 0;
+          break;
+        }
+        st.x = nx; st.y = ny;
+        remaining -= step;
+        if (Math.hypot(pt.x - st.x, pt.y - st.y) < 4) st.pi++;
+      }
+      if (st.pi >= st.path.length) {
+        if (Math.hypot(st.dest.x - st.x, st.dest.y - st.y) < 12) {
+          st.x = st.dest.x; st.y = st.dest.y;
+          st.moving = false; st.path = []; st.pi = 0;
+        }
+      }
+    });
+  };
+
   G.updateInteractables = function () {
     const p = G.player;
     if (!p) return;
@@ -3193,7 +3308,9 @@
     best = 64;
     A.NPCS.forEach(n => {
       if (n.prop) return;
-      const d = Math.hypot(p.x - (n.x * T + 16), p.y - (n.y * T + 18));
+      const pos = G.npcPos(n.id);
+      if (!pos) return;
+      const d = Math.hypot(p.x - pos.x, p.y - pos.y);
       if (d < best) { best = d; G.nearNpc = n; }
     });
     if (A.world.isDungeon()) {
@@ -3872,7 +3989,8 @@
     // npcs
     A.NPCS.forEach(n => {
       if (n.prop) return;
-      const nx = n.x * T + 16, ny = n.y * T + 30;
+      const pos = G.npcPos(n.id) || { x: n.x * T + 16, y: n.y * T + 18 };
+      const nx = pos.x, ny = pos.y + 12;
       const cls = n.id === 'aldric' ? 'mage' : n.id === 'brann' ? 'warrior' : n.id === 'orla' ? 'mage' : n.id === 'elara' ? 'archer' : n.id === 'nara' ? 'cleric' : n.id === 'banco' ? 'mage' : n.id === 'arauto' ? 'cleric' : 'mage';
       const spr = A.art.actor(n.look, cls, 0, 0);
       addD(ny, () => {

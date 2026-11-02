@@ -213,7 +213,10 @@ window.A = window.A || {};
   /* ------------------------------------------------------------------ */
   A.NPCS = [
     { id: 'aldric', name: 'Mestre Aldric', role: 'Mestre da Guilda', x: 68, y: 47, look: { outfit: '#6a4aa8', skin: '#f0c9a0', hair: '#e9e9f4', beard: '#f4f4fa', hat: '#5a3fa0' }, marker: 'quest' },
-    { id: 'orla',   name: 'Mercadora Orla', role: 'Mercadora', x: 62, y: 55, look: { outfit: '#3f8f5a', skin: '#f2c9a0', hair: '#8a4a22', apron: true }, marker: 'shop' },
+    { id: 'orla',   name: 'Mercadora Orla', role: 'Mercadora', x: 62, y: 55, look: { outfit: '#3f8f5a', skin: '#f2c9a0', hair: '#8a4a22', apron: true }, marker: 'shop', kind: 'merchant', dialogueId: null,
+  // Rotina simples de Etapa 1: alterna entre a loja (dia) e a praça (noite).
+  // Campos opcionais: NPCs sem `schedule` continuam estáticos.
+  schedule: [ { from: 6, to: 18, x: 62, y: 55 }, { from: 18, to: 6, x: 68, y: 55 } ] },
     { id: 'brann',  name: 'Ferreiro Brann', role: 'Ferreiro', x: 81, y: 47, look: { outfit: '#8a4a2a', skin: '#d9a077', hair: '#3a2a1a', beard: '#3a2a1a', apron: true }, marker: 'shop' },
     { id: 'elara',  name: 'Mestra Elara', role: 'Treinadora', x: 76, y: 57, look: { outfit: '#4a6fa8', skin: '#f0c9a0', hair: '#d9c27a', robe: true }, marker: 'train' },
     { id: 'nara',   name: 'Curandeira Nara', role: 'Curandeira', x: 64, y: 45, look: { outfit: '#e6e1cf', skin: '#f6d7b0', hair: '#c46a3a', robe: true }, marker: 'heal' },
