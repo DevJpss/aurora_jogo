@@ -4,7 +4,7 @@ description: Especialista em performance, Canvas, renderização, memória e oti
 mode: subagent
 model: groq/openai/gpt-oss-120b
 permission:
-  edit: false
+  edit: deny
 ---
 
 # Performance — Crônicas de Aurora

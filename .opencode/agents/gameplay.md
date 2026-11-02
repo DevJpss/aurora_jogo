@@ -4,7 +4,7 @@ description: Especialista em combate, automação, progresso e RPG de Crônicas 
 mode: subagent
 model: groq/openai/gpt-oss-120b
 permission:
-  edit: true
+  edit: allow
 ---
 
 # Gameplay — Crônicas de Aurora

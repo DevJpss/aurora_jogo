@@ -4,7 +4,7 @@ description: Especialista em balanceamento, economia, raridades e progressão de
 mode: subagent
 model: groq/openai/gpt-oss-120b
 permission:
-  edit: false
+  edit: deny
 ---
 
 # Balance — Crônicas de Aurora

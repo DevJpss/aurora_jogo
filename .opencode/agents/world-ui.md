@@ -4,7 +4,7 @@ description: Especialista em mundo, Canvas 2D, arte procedural e interface de Cr
 mode: subagent
 model: groq/openai/gpt-oss-120b
 permission:
-  edit: true
+  edit: allow
 ---
 
 # World UI — Crônicas de Aurora

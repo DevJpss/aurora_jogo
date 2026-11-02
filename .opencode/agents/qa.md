@@ -4,7 +4,7 @@ description: Especialista em QA, testes, regressões e validação de Crônicas 
 mode: subagent
 model: groq/openai/gpt-oss-120b
 permission:
-  edit: false
+  edit: deny
 ---
 
 # QA — Crônicas de Aurora
