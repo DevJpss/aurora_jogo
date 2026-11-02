@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const files = fs.readdirSync(__dirname)
-  .filter(f => f.endsWith('.js') && !['helpers.js', 'run.js'].includes(f))
+  .filter(f => f.endsWith('.js') && !['helpers.js', 'run.js', 'serve-and-run.js'].includes(f))
   .sort();
 
 let failed = 0;

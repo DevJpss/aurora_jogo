@@ -50,7 +50,7 @@ O jogo possui fluxo de boot, menu, título, login, servidores simulados, seleç�
 2. Antes de editar: liste com `Select-String` o que vai mudar e mostre.
 3. Mudança mínima. Commits separados quando o assunto for diferente.
 4. Mostre `git diff --stat` e o diff. Para cada número ou afirmação, cite símbolo e linha do código que a sustenta.
-5. Antes de pedir aprovação, rode a bateria: suba `python -m http.server 8123`, rode `node tests/run.js`, encerre o servidor e o Edge e mostre só o resumo por suíte (passou/falhou). Falha nova que não existia na linha de base: pare e investigue antes de seguir.
+5. Antes de pedir aprovação, rode a bateria: `node tests/serve-and-run.js` (termina sozinho); nunca suba servidor manualmente. Mostre só o resumo por suíte (passou/falhou). Falha nova que não existia na linha de base: pare e investigue antes de seguir.
 6. Confirme que a mudança está commitada na branch e que `git status` está limpo.
 7. Pare e peça aprovação. Nunca faça merge nem apague branch sem aprovação.
 8. Depois do OK: `git switch master`, merge, `git log --oneline -4` e apagar a branch.
