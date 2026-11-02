@@ -30,11 +30,13 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     else fail('etapa 1 inesperada: ' + JSON.stringify(s1));
 
     // Não avança sem cumprir requisitos: tentar entregar q26 de novo? já done; testar etapa 2 sem progresso.
-    await page.evaluate(() => { A.sys.turnInQuest(A.game.player, 'q26'); });
+    const rStage1 = await page.evaluate(() => A.sys.turnInQuest(A.game.player, 'q26'));
     const s2before = await page.evaluate(() => {
       const p = A.game.player;
       return { stage: p.quests.q26.stage, progress: p.quests.q26.progress };
     });
+    if (rStage1 && (rStage1.reward.gold || 0) === 0) ok('recompensa parcial de etapa intermediária não dá recompensa geral');
+    else fail('recompensa indevida na etapa intermediária: ' + JSON.stringify(rStage1));
     // após turn-in da etapa 1, deve ter avançado para etapa 2 com progresso 0
     if (s2before.stage === 1 && s2before.progress === 0) ok('turn-in da etapa 1 avança para etapa 2');
     else fail('avanço de etapa falhou: ' + JSON.stringify(s2before));
@@ -70,9 +72,13 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     await page.evaluate(() => { A.sys.turnInQuest(A.game.player, 'q26'); });
     const final = await page.evaluate(() => {
       const p = A.game.player;
-      return { claimed: p.quests.q26.claimed, flag: !!(p.story.flags && p.story.flags.q26_selos_rompidos) };
+      return {
+        claimed: p.quests.q26.claimed,
+        stageFlag: !!(p.story.flags && p.story.flags.q26_selos_rompidos),
+        baseFlag: !!(p.story.flags && p.story.flags.q26_base_done)
+      };
     });
-    if (final.claimed && final.flag) ok('etapa final conclui e aplica consequência narrativa');
+    if (final.claimed && final.stageFlag && final.baseFlag) ok('etapa final conclui e aplica efeitos de etapa e missão');
     else fail('conclusão final falhou: ' + JSON.stringify(final));
 
     // Pré-condições: diálogo reconhece missão ativa.
@@ -87,6 +93,18 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     });
     if (dlgOpt) ok('diálogo reconhece missão ativa');
     else fail('opção de diálogo não apareceu com missão ativa');
+
+    // Rastreamento atualiza automaticamente ao mudar de etapa.
+    await page.evaluate(() => {
+      const p = A.game.player;
+      p.quests.q26 = { progress: 1, done: true, claimed: false, stage: 0 };
+      A.game.trackQuest('q26');
+    });
+    const trackedBefore = await page.evaluate(() => A.game.questTrack && A.game.questTrack.type);
+    await page.evaluate(() => { A.sys.turnInQuest(A.game.player, 'q26'); });
+    const trackedAfter = await page.evaluate(() => A.game.questTrack && A.game.questTrack.type);
+    if (trackedBefore === 'talk' && trackedAfter === 'explore') ok('rastreamento atualiza automaticamente ao mudar de etapa');
+    else fail('rastreamento não atualizou: ' + trackedBefore + ' -> ' + trackedAfter);
 
     // Persistência no meio da missão.
     await page.evaluate(() => {

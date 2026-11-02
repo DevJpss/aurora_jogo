@@ -326,8 +326,12 @@
         if (r) {
           A.audio.play('level');
           if (r.levels && r.levels.length) G.onLevelUp(r.levels);
-          U.toast('Missão concluída! +' + (r.reward.gold || 0) + ' ouro, +' + (r.reward.xp || 0) + ' XP', 'quest');
-          if (r.next) U.toast('Nova missão: ' + r.next.title, 'quest');
+          if (r.advanced) {
+            U.toast('Etapa concluída! Nova etapa: ' + (r.nextStage + 1), 'quest');
+          } else {
+            U.toast('Missão concluída! +' + (r.reward.gold || 0) + ' ouro, +' + (r.reward.xp || 0) + ' XP', 'quest');
+            if (r.next) U.toast('Nova missão: ' + r.next.title, 'quest');
+          }
           G.save();
           U.refreshWin(); U.updateHUD(true);
         }

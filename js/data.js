@@ -328,6 +328,7 @@ window.A = window.A || {};
     // Capítulo 6 — A Cidadela do Eclipse (Nv 44–52)
     { id: 'q26', chapter: 6, title: 'O Selo se Rompe', giver: 'aldric', type: 'talk', need: 1, target: '', zone: 'vila',
       desc: 'Retorne a Mestre Aldric com o Núcleo Glacial.',
+      onComplete: [{ setFlag: 'q26_base_done' }],
       stages: [
         { id: 'q26_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'aldric', desc: 'Fale com Mestre Aldric sobre o Núcleo Glacial.' },
         { id: 'q26_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Permaneça na praça da Vila Aurora e prepare-se para o selo.' },

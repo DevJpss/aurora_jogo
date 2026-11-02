@@ -646,7 +646,14 @@
 
     // Recompensa da etapa atual (se houver) ou da missão.
     const stageDef = hasStages ? (base.stages[stageIdx] || {}) : {};
-    const rw = (stageDef.reward ? stageDef.reward : (d.reward || d.rewards || base.reward || base.rewards || {}));
+    // Recompensa parcial apenas se a etapa definir a sua própria. A recompensa
+    // geral da missão é dada apenas na conclusão final.
+    let rw;
+    if (!isLast) {
+      rw = stageDef.reward || {};
+    } else {
+      rw = stageDef.reward || d.reward || d.rewards || base.reward || base.rewards || {};
+    }
 
     // Efeitos ao concluir a etapa atual.
     if (stageDef.onComplete) applyEffects(stageDef.onComplete);
@@ -657,6 +664,15 @@
       st.stage = stageIdx + 1;
       st.progress = 0;
       st.done = false;
+      // Mantém o rastreamento sincronizado com a nova etapa.
+      if (A.game && A.game.questTrack && A.game.questTrack.id === id) {
+        const nq = S.questCurrent(id, p);
+        A.game.questTrack.data = nq;
+        A.game.questTrack.type = nq.type;
+        A.game.questTrack.target = nq.target;
+        A.game.questTrack.giver = nq.giver;
+        if (typeof A.game.refreshQuestGoal === 'function') A.game.refreshQuestGoal(A.game.questTrack);
+      }
       // Recompensa parcial da etapa, se definida.
       if (rw && (rw.gold || rw.xp || rw.items)) {
         p.gold += rw.gold || 0;
