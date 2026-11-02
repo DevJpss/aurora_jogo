@@ -17,19 +17,19 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     if (dlgState && dlgState.nodeId === 'start') ok('NPC com diálogo abre na etapa inicial');
     else fail('falha ao abrir diálogo: ' + JSON.stringify(dlgState));
 
-    const optCount = await page.evaluate(() => A.dialogue.availableOptions(A.dialogue.getNode('orla', 'start'), A.game.player).length);
+    const optCount = await page.evaluate(() => A.dialogue.availableOptions(A.dialogue.getNode('orla', 'start'), A.game.player, 'orla').length);
     if (optCount >= 2) ok('diálogo apresenta pelo menos duas opções');
     else fail('opções insuficientes: ' + optCount);
 
     // Opção condicional não aparece sem flag.
-    const hasConditionalBefore = await page.evaluate(() => A.dialogue.availableOptions(A.dialogue.getNode('orla', 'start'), A.game.player).some(o => o.label === 'Já nos falamos antes?'));
+    const hasConditionalBefore = await page.evaluate(() => A.dialogue.availableOptions(A.dialogue.getNode('orla', 'start'), A.game.player, 'orla').some(o => o.label === 'Já nos falamos antes?'));
     if (!hasConditionalBefore) ok('opção condicional oculta sem flag');
     else fail('opção condicional apareceu sem flag');
 
     // Avança para etapa correta.
     await page.evaluate(() => {
       const node = A.dialogue.getNode('orla', 'start');
-      const opt = A.dialogue.availableOptions(node, A.game.player).find(o => o.label === 'Como está a vila hoje?');
+      const opt = A.dialogue.availableOptions(node, A.game.player, 'orla').find(o => o.label === 'Como está a vila hoje?');
       A.game.dialogueChoose('orla', opt._idx);
     });
     const afterChoice = await page.evaluate(() => A.game.dialogueState && A.game.dialogueState.nodeId);
@@ -39,7 +39,7 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     // Volta ao início e ativa flag.
     await page.evaluate(() => {
       const node = A.dialogue.getNode('orla', 'vila');
-      const opt = A.dialogue.availableOptions(node, A.game.player).find(o => o.label === 'Encerrar conversa.');
+      const opt = A.dialogue.availableOptions(node, A.game.player, 'orla').find(o => o.label === 'Encerrar conversa.');
       A.game.dialogueChoose('orla', opt._idx);
     });
     const ended = await page.evaluate(() => A.game.dialogueState);
@@ -52,7 +52,7 @@ const { open, boot, ok, fail, summary } = require('./helpers');
 
     // Reabre e verifica opção condicional + persistência após save/load.
     await page.evaluate(() => { A.game.openNpc(A.NPCS.find(n => n.id === 'orla')); });
-    const hasConditionalAfter = await page.evaluate(() => A.dialogue.availableOptions(A.dialogue.getNode('orla', 'start'), A.game.player).some(o => o.label === 'Já nos falamos antes?'));
+    const hasConditionalAfter = await page.evaluate(() => A.dialogue.availableOptions(A.dialogue.getNode('orla', 'start'), A.game.player, 'orla').some(o => o.label === 'Já nos falamos antes?'));
     if (hasConditionalAfter) ok('opção condicional aparece com flag');
     else fail('opção condicional não apareceu com flag');
 

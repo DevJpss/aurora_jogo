@@ -14,41 +14,50 @@
         { label: 'Quero ver as poções.', next: 'shop' },
         { label: 'Como está a vila hoje?', next: 'vila' },
         { label: 'Sobre o selo...', next: 'selo', condition: { questActive: 'q26' } },
-        { label: 'Já nos falamos antes?', next: 'memoria', condition: { hasFlag: 'orla_conversou' } },
-        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
+        { label: 'Voce parece mais amigavel.', next: 'confianca', condition: { relation: { min: 10 } } },
+        { label: 'Já nos falamos antes?', next: 'memoria', condition: { hasMemory: 'orla_primeira_conversa' } },
+        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou', remember: 'orla_primeira_conversa', changeRelation: 3 } }
       ]
     },
     vila: {
       text: 'Os campos estão inquietos, mas a praça segue viva. Se for sair, leve ao menos uma poção de vida.',
       options: [
-        { label: 'Obrigado pelo conselho.', next: 'start' },
-        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
+        { label: 'Vou investigar o selo.', next: 'start', effect: { changeRelation: 2, learn: 'orla_sabe_da_vila' } },
+        { label: 'Nao e da sua conta.', next: 'start', effect: { changeRelation: -3 } },
+        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou', remember: 'orla_primeira_conversa' } }
       ]
     },
     memoria: {
-      text: 'Ah, você de novo! Bom ver que ainda está de pé. Volte sempre que precisar.',
+      text: 'Ah, voce de novo! Bom ver que ainda esta de pe. Volte sempre que precisar.',
       options: [
-        { label: 'Até mais, Orla.', end: true }
+        { label: 'Ate mais, Orla.', end: true }
       ]
     },
-    selo: {
-      text: 'O selo de Aurora treme. Se Aldric pediu o Núcleo Glacial, é porque a Cidadela já respira. Tenha cuidado.',
+    confianca: {
+      text: 'Gosto de quem mantem a palavra. Se precisar de algo, estarei aqui.',
       options: [
         { label: 'Obrigado, Orla.', next: 'start' },
-        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
+        { label: 'Encerrar conversa.', end: true }
       ]
     },
     shop: {
-      text: 'Escolha com calma. Poção de vida restaura 45% da vida; de mana, 50% da mana.',
+      text: 'Escolha com calma. Pocao de vida restaura 45% da vida; de mana, 50% da mana.',
       options: [
         { label: 'Abrir loja de poções.', next: 'servico', effect: { service: 'shop_potion' } },
-        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
+        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou', remember: 'orla_primeira_conversa' } }
       ]
     },
     servico: {
       text: 'Pode usar os botões de serviço abaixo. Estou à disposição.',
       options: [
-        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
+        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou', remember: 'orla_primeira_conversa' } }
+      ]
+    },
+    selo: {
+      text: 'O selo de Aurora treme. Se Aldric pediu o Núcleo Glacial, é porque a Cidadela já respira. Tenha cuidado.',
+      options: [
+        { label: 'Obrigado, Orla.', next: 'start', effect: { changeRelation: 2, learn: 'orla_sabe_do_selos' } },
+        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou', remember: 'orla_primeira_conversa', learn: 'orla_sabe_do_selos' } }
       ]
     }
   };
@@ -61,9 +70,9 @@
     return p.story;
   }
 
-  D.check = function (cond, p) {
+  D.check = function (cond, p, npcId) {
     if (!cond) return true;
-    if (Array.isArray(cond)) return cond.every(c => D.check(c, p));
+    if (Array.isArray(cond)) return cond.every(c => D.check(c, p, npcId));
     p = p || {};
     const story = p.story || { chapter: 1, flags: {} };
     const flags = story.flags || {};
@@ -96,19 +105,55 @@
       }
     }
     if (cond.relation && cond.relation.min != null) {
-      const rel = (p.npcRelations && p.npcRelations[cond.relation.npc]) || 0;
+      const npc = cond.relation.npc || npcId;
+      const rel = (p.npcRelations && p.npcRelations[npc]) || 0;
       if (rel < cond.relation.min) return false;
+    }
+    if (cond.relation && cond.relation.max != null) {
+      const npc = cond.relation.npc || npcId;
+      const rel = (p.npcRelations && p.npcRelations[npc]) || 0;
+      if (rel > cond.relation.max) return false;
+    }
+    if (typeof cond.hasMemory === 'string') {
+      const npc = npcId;
+      if (!A.sys.hasMemory(p, npc, cond.hasMemory)) return false;
+    } else if (cond.hasMemory && typeof cond.hasMemory === 'object') {
+      const npc = cond.hasMemory.npc || npcId;
+      const id = cond.hasMemory.id || cond.hasMemory.memory;
+      if (!A.sys.hasMemory(p, npc, id)) return false;
+    }
+    if (typeof cond.notMemory === 'string') {
+      if (A.sys.hasMemory(p, npcId, cond.notMemory)) return false;
+    } else if (cond.notMemory && typeof cond.notMemory === 'object') {
+      const npc = cond.notMemory.npc || npcId;
+      const id = cond.notMemory.id || cond.notMemory.memory;
+      if (A.sys.hasMemory(p, npc, id)) return false;
+    }
+    if (typeof cond.hasKnowledge === 'string') {
+      if (!A.sys.hasKnowledge(p, npcId, cond.hasKnowledge)) return false;
+    } else if (cond.hasKnowledge && typeof cond.hasKnowledge === 'object') {
+      const npc = cond.hasKnowledge.npc || npcId;
+      const id = cond.hasKnowledge.id || cond.hasKnowledge.knowledge;
+      if (!A.sys.hasKnowledge(p, npc, id)) return false;
+    }
+    if (typeof cond.notKnowledge === 'string') {
+      if (A.sys.hasKnowledge(p, npcId, cond.notKnowledge)) return false;
+    } else if (cond.notKnowledge && typeof cond.notKnowledge === 'object') {
+      const npc = cond.notKnowledge.npc || npcId;
+      const id = cond.notKnowledge.id || cond.notKnowledge.knowledge;
+      if (A.sys.hasKnowledge(p, npc, id)) return false;
     }
     return true;
   };
 
-  D.applyEffect = function (effect, p) {
+  D.applyEffect = function (effect, p, npcId) {
     if (!effect || !p) return;
     const list = Array.isArray(effect) ? effect : [effect];
     list.forEach(e => {
       if (!e) return;
       ensureStory(p);
       const flags = p.story.flags;
+      const targetNpc = e.npc || npcId || null;
       if (typeof e.setFlag === 'string') {
         flags[e.setFlag] = (e.value === undefined ? true : e.value);
       }
@@ -124,20 +169,49 @@
         if (q && p.quests && !p.quests[id] && A.sys.startQuest) A.sys.startQuest(p, id);
       }
       if (typeof e.service === 'string') {
-        // serviço solicitado pelo diálogo: fecha a conversa e abre o serviço via NPC.
         if (A.game && typeof A.game.npcAction === 'function') {
-          // adiado: apenas marca para a UI tratar; a UI chama npcAction.
           p._pendingService = e.service;
         }
+      }
+      // Relacionamentos (Etapa 4)
+      if (e.changeRelation != null) {
+        const spec = (typeof e.changeRelation === 'object') ? e.changeRelation : { delta: e.changeRelation };
+        const npc = spec.npc || targetNpc;
+        if (npc) A.sys.changeRelation(p, npc, spec.delta != null ? spec.delta : e.changeRelation);
+      }
+      if (e.setRelation != null) {
+        const spec = (typeof e.setRelation === 'object') ? e.setRelation : { value: e.setRelation };
+        const npc = spec.npc || targetNpc;
+        if (npc) A.sys.setRelation(p, npc, (spec.value != null ? spec.value : e.setRelation));
+      }
+      if (e.remember != null) {
+        const spec = (typeof e.remember === 'string') ? { id: e.remember } : e.remember;
+        const npc = spec.npc || targetNpc;
+        if (npc) A.sys.remember(p, npc, spec.id || spec.memory, spec.type, spec.data);
+      }
+      if (e.forgetMemory != null) {
+        const spec = (typeof e.forgetMemory === 'string') ? { id: e.forgetMemory } : e.forgetMemory;
+        const npc = spec.npc || targetNpc;
+        if (npc) A.sys.forgetMemory(p, npc, spec.id || spec.memory);
+      }
+      if (e.learn != null) {
+        const spec = (typeof e.learn === 'string') ? { id: e.learn } : e.learn;
+        const npc = spec.npc || targetNpc;
+        if (npc) A.sys.learn(p, npc, spec.id || spec.knowledge, spec.data);
+      }
+      if (e.forgetKnowledge != null) {
+        const spec = (typeof e.forgetKnowledge === 'string') ? { id: e.forgetKnowledge } : e.forgetKnowledge;
+        const npc = spec.npc || targetNpc;
+        if (npc) A.sys.forgetKnowledge(p, npc, spec.id || spec.knowledge);
       }
     });
   };
 
-  D.availableOptions = function (node, p) {
+  D.availableOptions = function (node, p, npcId) {
     const opts = (node && Array.isArray(node.options)) ? node.options : [];
     const out = [];
     opts.forEach((opt, i) => {
-      if (D.check(opt.condition, p)) {
+      if (D.check(opt.condition, p, npcId)) {
         const copy = Object.assign({}, opt);
         copy._idx = i;
         out.push(copy);
