@@ -439,7 +439,7 @@
   /* MISSÕES                                                             */
   /* ------------------------------------------------------------------ */
   S.questById = function (id) {
-    return A.QUESTS.find(q => q.id === id) || A.SIDE_QUESTS.find(q => q.id === id);
+    return A.QUESTS.find(q => q.id === id) || A.SIDE_QUESTS.find(q => q.id === id) || (A.STORY_QUESTS || []).find(q => q.id === id);
   };
 
   // Missões podem ter etapas opcionais (`stages`). Missões antigas não têm.
@@ -560,6 +560,11 @@
 
   S.startQuest = function (p, id) {
     if (p.quests[id]) return;
+    const q = S.questById(id);
+    if (q && q.prereq && Array.isArray(q.prereq.quests)) {
+      const ok = q.prereq.quests.every(pid => p.quests && p.quests[pid] && p.quests[pid].claimed);
+      if (!ok) return false;
+    }
     p.quests[id] = { progress: 0, done: false, claimed: false, stage: 0 };
   };
 

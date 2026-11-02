@@ -40,9 +40,15 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     if (flag) ok('consequência arc1_investigando aplicada');
     else fail('flag não aplicada');
 
-    // arc1_q3 registra conhecimento para Irene.
+    // arc1_q3 registra conhecimento para Irene (requer arc1_q2 concluída).
     await page.evaluate(() => {
       const p = A.game.player;
+      if (!p.quests.arc1_q1) p.quests.arc1_q1 = { progress: 0, done: false, claimed: false, stage: 0 };
+      p.quests.arc1_q1.claimed = true;
+      p.quests.arc1_q1.done = true;
+      if (!p.quests.arc1_q2) p.quests.arc1_q2 = { progress: 0, done: false, claimed: false, stage: 0 };
+      p.quests.arc1_q2.claimed = true;
+      p.quests.arc1_q2.done = true;
       p.quests.arc1_q3 = { progress: 0, done: false, claimed: false, stage: 0 };
     });
     await page.evaluate(() => { A.game.openNpc(A.NPCS.find(n => n.id === 'irene')); });
@@ -77,6 +83,49 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     const ely = await page.evaluate(() => !!(A.NPCS.find(n => /elyssara/i.test(n.id || n.name)) || (A.DIALOGUES && A.DIALOGUES.elyssara)));
     if (!ely) ok('nenhuma aparição direta de Elyssara');
     else fail('Elyssara apareceu diretamente');
+
+    // Encadeamento: missões posteriores não iniciam prematuramente.
+    const chain = await page.evaluate(() => {
+      const p = A.sys.blankCharacter({ cls: 'warrior', name: 'Chain', server: 'aurora' });
+      const r2before = A.sys.startQuest(p, 'arc1_q2');
+      const r3before = A.sys.startQuest(p, 'arc1_q3');
+      // conclui arc1_q1
+      p.quests.arc1_q1 = { progress: 0, done: false, claimed: false, stage: 0 };
+      A.sys.talkTo(p, 'marta');
+      A.sys.turnInQuest(p, 'arc1_q1');
+      A.sys.questEvent(p, 'explore', 'vila', 1);
+      A.sys.turnInQuest(p, 'arc1_q1');
+      const r2after = A.sys.startQuest(p, 'arc1_q2');
+      const r3before2 = A.sys.startQuest(p, 'arc1_q3');
+      return { r2before, r3before, r2after, r3before2 };
+    });
+    if (chain.r2before === false && chain.r3before === false && chain.r2after !== false) ok('encadeamento bloqueia missões posteriores');
+    else fail('encadeamento: ' + JSON.stringify(chain));
+
+    // Consequências nos diálogos.
+    const cons = await page.evaluate(() => {
+      const p = A.game.player;
+      // garante arc1_q1 concluída
+      if (!p.quests.arc1_q1) p.quests.arc1_q1 = { progress: 0, done: false, claimed: false, stage: 0 };
+      p.quests.arc1_q1.claimed = true;
+      p.quests.arc1_q1.done = true;
+      A.game.openNpc(A.NPCS.find(n => n.id === 'marta'));
+      const martaOpts = A.dialogue.availableOptions(A.dialogue.getNode('marta', 'start'), p, 'marta').map(o => o.label);
+      return { martaHasFollowup: martaOpts.indexOf('Voltei sobre os sussurros.') >= 0 };
+    });
+    if (cons.martaHasFollowup) ok('Marta comenta após a investigação');
+    else fail('consequência de Marta ausente');
+
+    // Manifestação: condição de flag e ausência de interação.
+    const manif = await page.evaluate(() => {
+      const p = A.game.player;
+      const beforeFlag = !!(p.story.flags && p.story.flags.arc1_investigando);
+      const zone = A.world.zoneAt(75, 48);
+      const hasNpcAtSpot = !!A.NPCS.find(n => n.x === 75 && n.y === 48) || !!(A.ANIMALS || []).find(a => a.x === 75 && a.y === 48);
+      return { beforeFlag, zone, hasNpcAtSpot };
+    });
+    if (manif.zone === 'vila' && !manif.hasNpcAtSpot) ok('manifestação restrita à praça e sem interação');
+    else fail('manifestação: ' + JSON.stringify(manif));
 
     // Persistência.
     const persisted = await page.evaluate(() => {

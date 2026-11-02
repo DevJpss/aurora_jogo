@@ -4155,11 +4155,26 @@ G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; 
             if (fx > camX - 50 && fx < camX + VW + 50 && fy > camY - 50 && fy < camY + VH + 50) {
               addD(fy, () => {
                 ctx.save();
-                ctx.globalAlpha = 0.18;
-                ctx.fillStyle = '#c9c4d6';
-                ctx.beginPath(); ctx.ellipse(fx, fy, 7, 22, 0, 0, 6.283); ctx.fill();
-                ctx.globalAlpha = 0.08;
-                ctx.beginPath(); ctx.ellipse(fx, fy - 10, 12, 12, 0, 0, 6.283); ctx.fill();
+                ctx.globalAlpha = 0.16;
+                ctx.fillStyle = '#b9c4d6';
+                // capa/silhueta
+                ctx.beginPath();
+                ctx.moveTo(fx - 9, fy + 24);
+                ctx.quadraticCurveTo(fx - 12, fy, fx - 6, fy - 18);
+                ctx.quadraticCurveTo(fx, fy - 30, fx + 6, fy - 18);
+                ctx.quadraticCurveTo(fx + 12, fy, fx + 9, fy + 24);
+                ctx.closePath();
+                ctx.fill();
+                // cabeça
+                ctx.globalAlpha = 0.12;
+                ctx.beginPath(); ctx.arc(fx, fy - 26, 7, 0, 6.283); ctx.fill();
+                // brilho sutil
+                ctx.globalAlpha = 0.06;
+                const rg = ctx.createRadialGradient(fx, fy - 10, 2, fx, fy - 10, 34);
+                rg.addColorStop(0, 'rgba(200,220,240,0.6)');
+                rg.addColorStop(1, 'rgba(200,220,240,0)');
+                ctx.fillStyle = rg;
+                ctx.fillRect(fx - 40, fy - 50, 80, 100);
                 ctx.restore();
               });
             }

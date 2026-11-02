@@ -230,7 +230,7 @@ window.A = window.A || {};
     schedule: [ { from: 7, to: 19, x: 60, y: 50 }, { from: 19, to: 7, x: 58, y: 46 } ] },
   { id: 'dario', name: 'Dario', role: 'Ferreiro', x: 80, y: 44, look: { outfit: '#6a4a2a', skin: '#d9a077', hair: '#2a1a0a', beard: '#2a1a0a', apron: true }, marker: 'shop', kind: 'citizen',
     schedule: [ { from: 6, to: 18, x: 80, y: 44 }, { from: 18, to: 6, x: 78, y: 48 } ] },
-  { id: 'liora', name: 'Liora', role: 'Curandeira', x: 66, y: 40, look: { outfit: '#7a9a6a', skin: '#f6d7b0', hair: '#c46a3a', robe: true }, marker: 'heal', kind: 'citizen',
+  { id: 'liora', name: 'Liora', role: 'Curandeira', x: 66, y: 40, look: { outfit: '#7a9a6a', skin: '#f6d7b0', hair: '#c46a3a', robe: true }, marker: 'heal', kind: 'citizen', dialogueId: 'liora',
     schedule: [ { from: 8, to: 20, x: 66, y: 40 }, { from: 20, to: 8, x: 64, y: 44 } ] },
   { id: 'tomas', name: 'Tomás', role: 'Agricultor', x: 56, y: 60, look: { outfit: '#8a7a4a', skin: '#c98f6a', hair: '#3a2a1a', hat: '#5a4a2a' }, marker: 'quest', kind: 'citizen',
     schedule: [ { from: 5, to: 17, x: 56, y: 60 }, { from: 17, to: 5, x: 58, y: 56 } ] },
@@ -468,14 +468,14 @@ window.A = window.A || {};
         { id: 'arc1_q1_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Observe a praça ao anoitecer.', onComplete: [{ setFlag: 'arc1_investigando' }] }
       ],
       reward: { gold: 120, xp: 200 } },
-    { id: 'arc1_q2', title: 'A Luz que não é Fogo', giver: 'liora', type: 'talk', need: 1, target: '', zone: 'vila',
+    { id: 'arc1_q2', title: 'A Luz que não é Fogo', giver: 'liora', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q1'] },
       desc: 'Liora viu uma luz estranha perto do lago dos campos. Fale com ela.',
       stages: [
         { id: 'arc1_q2_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'liora', desc: 'Fale com Liora sobre a luz.' },
         { id: 'arc1_q2_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Viaje aos Campos Verdes e observe a luz.', onComplete: [{ setFlag: 'arc1_luz_vista' }] }
       ],
       reward: { gold: 150, xp: 260 } },
-    { id: 'arc1_q3', title: 'Cinco Nomes no Registro', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila',
+    { id: 'arc1_q3', title: 'Cinco Nomes no Registro', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q2'] },
       desc: 'Irene guarda registros antigos. Peça para vê-los.',
       stages: [
         { id: 'arc1_q3_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre os registros.' },

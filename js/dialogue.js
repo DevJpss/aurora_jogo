@@ -68,6 +68,7 @@
       options: [
         { label: 'O que você ouviu?', next: 'detalhe' },
         { label: 'Talvez seja só o vento.', next: 'vento' },
+        { label: 'Voltei sobre os sussurros.', next: 'depois', condition: { hasFlag: 'arc1_investigando' } },
         { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros', changeRelation: 1 } }
       ]
     },
@@ -76,6 +77,13 @@
       options: [
         { label: 'Vou observar hoje à noite.', next: 'start', effect: { startQuest: 'arc1_q1', learn: 'sussurros_praca' } },
         { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros' } }
+      ]
+    },
+    depois: {
+      text: 'Então não era só imaginação. A luz some, mas o frio fica. Cuidado ao anoitecer.',
+      options: [
+        { label: 'Obrigado, Marta.', next: 'start' },
+        { label: 'Encerrar conversa.', end: true }
       ]
     },
     vento: {
@@ -100,6 +108,61 @@
       options: [
         { label: 'Posso ver o pergaminho?', next: 'pergaminho' },
         { label: 'Encerrar conversa.', end: true, effect: { startQuest: 'arc1_q3' } }
+      ]
+    },
+    sonhos: {
+      text: 'Pessoas dizem ouvir vozes que prometem um mundo melhor. Não sei se são sonhos ou algo mais.',
+      options: [
+        { label: 'Encerrar conversa.', end: true, effect: { learn: 'cinco_vozes_rumor', npc: 'irene' } }
+      ]
+    },
+    pergaminho: {
+      text: 'O pergaminho está gasto, mas os cinco nomes permanecem. Eles podem ser pistas, ou apenas ecos.',
+      options: [
+        { label: 'Obrigado, Irene.', next: 'start', effect: { startQuest: 'arc1_q3', learn: 'cinco_nomes_registro', npc: 'irene' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    }
+  };
+  A.DIALOGUES.liora = {
+    start: {
+      text: 'Vi uma luz estranha perto do lago dos campos. Não era fogo, nem luar.',
+      options: [
+        { label: 'Conte-me mais.', next: 'detalhe' },
+        { label: 'Ja investigou os sussurros?', next: 'sussurros', condition: { questDone: 'arc1_q1' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    detalhe: {
+      text: 'Ela tremia como água, mas não molhava. Desapareceu ao amanhecer.',
+      options: [
+        { label: 'Vou observar nos campos.', next: 'start', effect: { startQuest: 'arc1_q2' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    sussurros: {
+      text: 'Marta me contou. Talvez a luz e os sussurros estejam ligados.',
+      options: [
+        { label: 'Vou investigar.', next: 'start', effect: { startQuest: 'arc1_q2' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    }
+  };
+
+  A.DIALOGUES.irene = {
+    start: {
+      text: 'Guardo registros antigos. Alguns nomes se repetem em sonhos que as pessoas relatam.',
+      options: [
+        { label: 'Que registros?', next: 'registros' },
+        { label: 'Que sonhos?', next: 'sonhos' },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    registros: {
+      text: 'Cinco nomes aparecem em um pergaminho empoeirado. Não sei quem eram, mas não eram da vila.',
+      options: [
+        { label: 'Posso ver o pergaminho?', next: 'pergaminho', condition: { questDone: 'arc1_q2' } },
+        { label: 'Encerrar conversa.', end: true }
       ]
     },
     sonhos: {
