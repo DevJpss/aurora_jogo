@@ -5,7 +5,7 @@ const path = require('path');
 const sharp = require('sharp');
 
 const ROOT = path.resolve(__dirname, '..');
-const SOURCE = path.join(ROOT, 'sprites', 'Gemini_Generated_Image_1nuwvk1nuwvk1nuw.jpg');
+const SOURCE = path.join(ROOT, 'sprites', 'guerreiro varias animacoes 3.jpg');
 const OUT_DIR = path.join(ROOT, 'assets', 'pixel-art', 'actors', 'warrior');
 const SHEET_96 = path.join(OUT_DIR, 'warrior-96x128.png');
 const SHEET_48 = path.join(OUT_DIR, 'warrior-48x64.png');
@@ -16,6 +16,9 @@ const FRAME_H = 128;
 const BASELINE = 124;
 const FOOT_BAND = 0.1;
 const MAGENTA = { r: 255, g: 0, b: 255 };
+const SOURCE_COLS = 8;
+const SOURCE_ROWS = 4;
+const SELECTED_COLUMNS = [0, 2, 4, 6];
 
 function magentaDistance(r, g, b) {
   return Math.max(Math.abs(r - MAGENTA.r), Math.abs(g - MAGENTA.g), Math.abs(b - MAGENTA.b));
@@ -221,17 +224,18 @@ async function main() {
   const { data, info } = input;
   cleanBackground(data, info.width, info.height);
 
-  const cellW = info.width / 4;
-  const cellH = info.height / 3;
+  const cellW = info.width / SOURCE_COLS;
+  const cellH = info.height / SOURCE_ROWS;
   const frames = [];
   let maxWidth = 0;
   let maxHeight = 0;
   for (let dir = 0; dir < 3; dir += 1) {
-    for (let frame = 0; frame < 4; frame += 1) {
+    for (let frame = 0; frame < SELECTED_COLUMNS.length; frame += 1) {
+      const sourceColumn = SELECTED_COLUMNS[frame];
       const cropped = cropFrame(
         data, info.width, info.height,
-        Math.floor(frame * cellW), Math.floor(dir * cellH),
-        Math.floor((frame + 1) * cellW), Math.floor((dir + 1) * cellH)
+        Math.floor(sourceColumn * cellW), Math.floor(dir * cellH),
+        Math.floor((sourceColumn + 1) * cellW), Math.floor((dir + 1) * cellH)
       );
       if (dir === 1 && (frame === 0 || frame === 1)) pruneFloatingTop(cropped);
       frames.push({ dir, frame, cropped });
