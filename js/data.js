@@ -17,7 +17,6 @@ window.A = window.A || {};
   // abandonados. A versão real do conteúdo fica dentro do JSON (saveData.version).
   A.SAVE_KEY = 'aurora.mmo.save.v2';
   A.SAVE_VERSION = 4;
-  A.SESSION_KEY = 'aurora.mmo.session.v2';
   A.SETTINGS_KEY = 'aurora.mmo.settings.v2';
 
   /* ------------------------------------------------------------------ */

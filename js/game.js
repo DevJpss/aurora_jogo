@@ -319,7 +319,6 @@
     const s = A.SERVERS.find(x => x.id === id);
     if (!s || s.status !== 'online') { A.ui.toast('Servidor em manutenção.', 'erro'); return; }
     G.currentServer = id;
-    A.store.set(A.SESSION_KEY, { account: G.account.name, server: id });
     A.audio.play('open');
     A.ui.show('chars');
     A.ui.renderChars();
@@ -429,7 +428,6 @@
     A.ui.updateHUD(true);
     A.audio.resume();
     if (G.settings.music > 0.01) A.audio.startMusic();
-    A.store.set(A.SESSION_KEY, { account: G.account.name, server: G.currentServer, char: p.id });
     G.saveTimer = 0;
     G.applySettings();
     G.chatTimer = 4;
@@ -497,7 +495,6 @@
   G.resetAll = function () {
     A.store.del(A.SAVE_KEY);
     A.store.del(A.SAVE_KEY + '.bak');
-    A.store.del(A.SESSION_KEY);
     A.store.del(A.SETTINGS_KEY);
     A.store.del('aurora.account');
     location.reload();
