@@ -2,7 +2,6 @@
 name: gameplay
 description: Especialista em combate, automação, progresso e RPG de Crônicas de Aurora
 mode: subagent
-model: groq/openai/gpt-oss-120b
 permission:
   edit: allow
 ---

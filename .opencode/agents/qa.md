@@ -2,7 +2,7 @@
 name: qa
 description: Especialista em QA, testes, regressões e validação de Crônicas de Aurora
 mode: subagent
-model: groq/openai/gpt-oss-120b
+model: opencode/deepseek-v4.1-flash-free
 permission:
   edit: deny
 ---

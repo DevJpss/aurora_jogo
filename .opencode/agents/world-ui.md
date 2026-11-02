@@ -2,7 +2,6 @@
 name: world-ui
 description: Especialista em mundo, Canvas 2D, arte procedural e interface de Crônicas de Aurora
 mode: subagent
-model: groq/openai/gpt-oss-120b
 permission:
   edit: allow
 ---

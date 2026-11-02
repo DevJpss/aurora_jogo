@@ -2,7 +2,6 @@
 name: build
 description: Implementador principal de Crônicas de Aurora
 mode: primary
-model: groq/openai/gpt-oss-120b
 permission:
   edit: allow
 ---

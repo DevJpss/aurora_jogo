@@ -2,7 +2,6 @@
 name: architect
 description: Arquiteto técnico de Crônicas de Aurora
 mode: subagent
-model: groq/openai/gpt-oss-120b
 permission:
   edit: deny
 ---

@@ -2,7 +2,6 @@
 name: balance
 description: Especialista em balanceamento, economia, raridades e progressão de Crônicas de Aurora
 mode: subagent
-model: groq/openai/gpt-oss-120b
 permission:
   edit: deny
 ---

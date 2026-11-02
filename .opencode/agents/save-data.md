@@ -2,7 +2,6 @@
 name: save-data
 description: Especialista em save versionado, migração, backup e integridade de Crônicas de Aurora
 mode: subagent
-model: groq/openai/gpt-oss-120b
 permission:
   edit: allow
 ---
