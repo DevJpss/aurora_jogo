@@ -223,7 +223,36 @@ window.A = window.A || {};
     { id: 'banco',  name: 'Banqueiro Ivo', role: 'Banco', x: 84, y: 55, look: { outfit: '#2f3f6f', skin: '#c98f6a', hair: '#2a2a2a', hat: '#22283f' }, marker: 'bank' },
     { id: 'arauto', name: 'Arauto do Eclipse', role: 'Masmorra e Eventos', x: 70, y: 60, look: { outfit: '#3a2a55', skin: '#b8b0c8', hair: '#1a1020', hat: '#1a1020', robe: true }, marker: 'dungeon' },
     { id: 'sella', name: 'Vigia Sella', role: 'Guardiã dos Picos', x: 173, y: 24, look: { outfit: '#4a7a9a', skin: '#e8c8a8', hair: '#d8e8f4', hat: '#2a4a6a', robe: true }, marker: 'quest' },
-    { id: 'quadro', name: 'Quadro de Recompensas', role: 'Missões diárias', x: 74, y: 43, look: { outfit: '#7a5a2a', skin: '#000000', hair: '#000000' }, marker: 'board', prop: true }
+    { id: 'quadro', name: 'Quadro de Recompensas', role: 'Missões diárias', x: 74, y: 43, look: { outfit: '#7a5a2a', skin: '#000000', hair: '#000000' }, marker: 'board', prop: true },
+
+  // Habitantes de Vila Aurora (Etapa 5). Convivem com os NPCs de serviço.
+  { id: 'helena', name: 'Helena', role: 'Comerciante', x: 60, y: 50, look: { outfit: '#c97b3d', skin: '#f2c9a0', hair: '#5a3a2a', apron: true }, marker: 'shop', kind: 'citizen',
+    schedule: [ { from: 7, to: 19, x: 60, y: 50 }, { from: 19, to: 7, x: 58, y: 46 } ] },
+  { id: 'dario', name: 'Dario', role: 'Ferreiro', x: 80, y: 44, look: { outfit: '#6a4a2a', skin: '#d9a077', hair: '#2a1a0a', beard: '#2a1a0a', apron: true }, marker: 'shop', kind: 'citizen',
+    schedule: [ { from: 6, to: 18, x: 80, y: 44 }, { from: 18, to: 6, x: 78, y: 48 } ] },
+  { id: 'liora', name: 'Liora', role: 'Curandeira', x: 66, y: 40, look: { outfit: '#7a9a6a', skin: '#f6d7b0', hair: '#c46a3a', robe: true }, marker: 'heal', kind: 'citizen',
+    schedule: [ { from: 8, to: 20, x: 66, y: 40 }, { from: 20, to: 8, x: 64, y: 44 } ] },
+  { id: 'tomas', name: 'Tomás', role: 'Agricultor', x: 56, y: 60, look: { outfit: '#8a7a4a', skin: '#c98f6a', hair: '#3a2a1a', hat: '#5a4a2a' }, marker: 'quest', kind: 'citizen',
+    schedule: [ { from: 5, to: 17, x: 56, y: 60 }, { from: 17, to: 5, x: 58, y: 56 } ] },
+  { id: 'nilo', name: 'Nilo', role: 'Mensageiro', x: 70, y: 52, look: { outfit: '#4a7a9a', skin: '#e8c8a8', hair: '#d8e8f4', hat: '#2a4a6a' }, marker: 'quest', kind: 'citizen',
+    schedule: [ { from: 6, to: 12, x: 70, y: 52 }, { from: 12, to: 18, x: 76, y: 46 }, { from: 18, to: 6, x: 72, y: 54 } ] },
+  { id: 'marta', name: 'Marta', role: 'Estalajadeira', x: 56, y: 39, look: { outfit: '#9a6a4a', skin: '#f0c9a0', hair: '#6a3a1a', apron: true }, marker: 'shop', kind: 'citizen',
+    schedule: [ { from: 9, to: 22, x: 56, y: 39 }, { from: 22, to: 9, x: 58, y: 42 } ] },
+  { id: 'breno', name: 'Breno', role: 'Carpinteiro', x: 88, y: 55, look: { outfit: '#7a5a3a', skin: '#d9a077', hair: '#3a2a1a', beard: '#3a2a1a' }, marker: 'train', kind: 'citizen',
+    schedule: [ { from: 7, to: 17, x: 88, y: 55 }, { from: 17, to: 7, x: 86, y: 52 } ] },
+  { id: 'irene', name: 'Irene', role: 'Parteira', x: 70, y: 48, look: { outfit: '#6a5a7a', skin: '#f6d7b0', hair: '#c4c4c4', robe: true }, marker: 'heal', kind: 'citizen' },
+  { id: 'caio', name: 'Caio', role: 'Aprendiz', x: 82, y: 46, look: { outfit: '#5a4a3a', skin: '#e8c8a8', hair: '#2a1a0a' }, marker: 'train', kind: 'citizen',
+    schedule: [ { from: 7, to: 17, x: 82, y: 46 }, { from: 17, to: 7, x: 80, y: 48 } ] },
+  { id: 'rosa', name: 'Rosa', role: 'Curandeira', x: 65, y: 46, look: { outfit: '#a67a6a', skin: '#f2c9a0', hair: '#8a4a22', robe: true }, marker: 'heal', kind: 'citizen',
+    schedule: [ { from: 8, to: 20, x: 65, y: 46 }, { from: 20, to: 8, x: 63, y: 44 } ] }
+  ];
+
+  A.ANIMALS = [
+    { id: 'pingo', name: 'Pingo', species: 'gato', color: '#e8a33d', x: 63, y: 52, area: { x0: 58, y0: 48, x1: 70, y1: 56 }, kind: 'animal' },
+    { id: 'brasa', name: 'Brasa', species: 'cachorro', color: '#8a4a2a', x: 82, y: 48, area: { x0: 78, y0: 44, x1: 86, y1: 52 }, kind: 'animal' },
+    { id: 'estrela', name: 'Estrela', species: 'cabra', color: '#e8e8e8', x: 56, y: 62, area: { x0: 52, y0: 58, x1: 62, y1: 66 }, kind: 'animal' },
+    { id: 'galinha1', name: 'Galinha', species: 'galinha', color: '#d9c9a0', x: 54, y: 61, area: { x0: 52, y0: 58, x1: 60, y1: 64 }, kind: 'animal' },
+    { id: 'galinha2', name: 'Galinha', species: 'galinha', color: '#d9c9a0', x: 57, y: 63, area: { x0: 52, y0: 58, x1: 60, y1: 64 }, kind: 'animal' }
   ];
 
   A.WAYPOINTS = [
@@ -333,7 +362,11 @@ window.A = window.A || {};
         { id: 'q26_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'aldric', desc: 'Fale com Mestre Aldric sobre o Núcleo Glacial.' },
         { id: 'q26_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Permaneça na praça da Vila Aurora e prepare-se para o selo.' },
         { id: 'q26_s3', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'aldric', desc: 'Confirme a Aldric que está pronto para a Cidadela.',
-          onComplete: [{ setFlag: 'q26_selos_rompidos' }] }
+          onComplete: [
+            { setFlag: 'q26_selos_rompidos' },
+            { remember: 'q26_ajudou_selos', type: 'missao', npc: 'aldric' },
+            { learn: 'selo_rompido', npc: 'aldric' }
+          ] }
       ],
       reward: { gold: 1400, xp: 5000, items: [{ id: 'potion_hp', qty: 10 }] } },
     { id: 'q27', chapter: 6, title: 'Portões da Cidadela', giver: 'arauto', type: 'dungeon', need: 8, target: 'eclipse_knight', zone: 'cidadela', dungeon: 'cidadela',
@@ -513,6 +546,10 @@ window.A = window.A || {};
 
   A.GUILD_NAMES = ['Lua Negra', 'Guardiões de Aurora', 'Ordem do Eclipse', 'Filhos da Tempestade'];
   A.GUILD_MEMBERS = ['Thalion', 'Mira', 'Kael', 'Selene', 'Rurik', 'Nyx'];
+
+  A.EVENTS = [
+    { id: 'caixa_quebrada', name: 'Caixa quebrada na praça', startHour: 10, endHour: 12, flag: 'evento_caixa_quebrada', npc: 'marta', memory: 'caixa_quebrada_vista' }
+  ];
 
   A.AUDIO = {
     // notas MIDI-ish para o synth procedural

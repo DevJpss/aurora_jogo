@@ -60,6 +60,10 @@
       // uma segunda migração quando as fases seguintes forem ligadas.
       story: { chapter: 1, step: 0, flags: {} },
       unlocks: { talents: false, enchant: false, mount: false, guild: false, gems: false, sets: false, raid: false, arena: false, factions: false, season: false },
+       npcRelations: {},
+       npcMemory: {},
+       npcKnowledge: {},
+       eventState: {},
       endgame: {
         keys: 0,
         fragments: 0,
@@ -620,6 +624,83 @@
     return changed;
   };
 
+  /* ------------------------------------------------------------------ */
+  /* RELACIONAMENTOS, MEMÓRIA E CONHECIMENTO (Etapa 4)                   */
+  /* ------------------------------------------------------------------ */
+  function validNpc(id) { return !!A.NPCS.find(n => n.id === id); }
+  function ensureObj(p, field) { if (!p[field] || typeof p[field] !== 'object') p[field] = {}; return p[field]; }
+
+  S.relation = function (p, npcId) {
+    if (!p) return 0;
+    const rel = ensureObj(p, 'npcRelations');
+    return Number(rel[npcId] || 0);
+  };
+  S.changeRelation = function (p, npcId, delta) {
+    if (!p || !validNpc(npcId)) return false;
+    delta = Number(delta) || 0;
+    const rel = ensureObj(p, 'npcRelations');
+    const cur = Number(rel[npcId] || 0) + delta;
+    rel[npcId] = Math.max(-100, Math.min(100, Math.round(cur)));
+    return rel[npcId];
+  };
+  S.setRelation = function (p, npcId, value) {
+    if (!p || !validNpc(npcId)) return false;
+    const rel = ensureObj(p, 'npcRelations');
+    rel[npcId] = Math.max(-100, Math.min(100, Math.round(Number(value) || 0)));
+    return rel[npcId];
+  };
+
+  S.hasMemory = function (p, npcId, memoryId) {
+    if (!p || !npcId || !memoryId) return false;
+    const mem = ensureObj(p, 'npcMemory');
+    return !!(mem[npcId] && mem[npcId][memoryId]);
+  };
+  S.remember = function (p, npcId, memoryId, type, data) {
+    if (!p || !validNpc(npcId) || !memoryId) return false;
+    const mem = ensureObj(p, 'npcMemory');
+    if (!mem[npcId] || typeof mem[npcId] !== 'object') mem[npcId] = {};
+    if (mem[npcId][memoryId]) return false; // evita duplicação
+    mem[npcId][memoryId] = {
+      id: memoryId,
+      type: type || 'evento',
+      data: (data && typeof data === 'object') ? data : (data != null ? { value: data } : {}),
+      at: Date.now()
+    };
+    return true;
+  };
+  S.forgetMemory = function (p, npcId, memoryId) {
+    if (!p || !npcId || !memoryId) return false;
+    const mem = ensureObj(p, 'npcMemory');
+    if (mem[npcId] && mem[npcId][memoryId]) {
+      delete mem[npcId][memoryId];
+      return true;
+    }
+    return false;
+  };
+
+  S.hasKnowledge = function (p, npcId, knowledgeId) {
+    if (!p || !npcId || !knowledgeId) return false;
+    const kn = ensureObj(p, 'npcKnowledge');
+    return !!(kn[npcId] && kn[npcId][knowledgeId]);
+  };
+  S.learn = function (p, npcId, knowledgeId, data) {
+    if (!p || !validNpc(npcId) || !knowledgeId) return false;
+    const kn = ensureObj(p, 'npcKnowledge');
+    if (!kn[npcId] || typeof kn[npcId] !== 'object') kn[npcId] = {};
+    if (kn[npcId][knowledgeId]) return false; // evita duplicação
+    kn[npcId][knowledgeId] = (data && typeof data === 'object') ? data : (data != null ? { value: data } : { known: true });
+    return true;
+  };
+  S.forgetKnowledge = function (p, npcId, knowledgeId) {
+    if (!p || !npcId || !knowledgeId) return false;
+    const kn = ensureObj(p, 'npcKnowledge');
+    if (kn[npcId] && kn[npcId][knowledgeId]) {
+      delete kn[npcId][knowledgeId];
+      return true;
+    }
+    return false;
+  };
+
   S.turnInQuest = function (p, id) {
     const base = S.questById(id), st = p.quests[id];
     if (!base || !st) return null;
@@ -937,6 +1018,10 @@
     p.stamina = p.stamina == null ? p.staminaMax : A.clamp(Number(p.stamina) || 0, 0, p.staminaMax);
     p.story = Object.assign({ chapter: 1, step: 0, flags: {} }, p.story || {});
     p.story.flags = p.story.flags || {};
+    p.npcRelations = p.npcRelations || {};
+    p.npcMemory = p.npcMemory || {};
+    p.npcKnowledge = p.npcKnowledge || {};
+    p.eventState = p.eventState || {};
     p.story.chapter = A.clamp(Math.floor(Number(p.story.chapter) || 1), 1, 8);
     p.story.step = Math.max(0, Math.floor(Number(p.story.step) || 0));
     const unlocks = { talents: false, enchant: false, mount: false, guild: false, gems: false, sets: false, raid: false, arena: false, factions: false, season: false };

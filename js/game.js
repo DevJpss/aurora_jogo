@@ -28,6 +28,8 @@
   G.worldClock = 8 * 3600;
   G.npcState = {};
   G._npcReplanTimer = 0;
+  G.animalState = {};
+  G._animalTimer = 0;
   G.dialogueState = null;
   G.dayLen = 900;
   G.settings = Object.assign({}, DEFAULTS);
@@ -406,7 +408,7 @@
     G.worldClock = 8 * 3600;
     G.combat = 0;
     G.nearNpc = null; G.nearNode = null; G.nearPortal = null; G.nearExit = null;
-G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
+G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; G.dialogueState = null;
 
     if (p.map === 'cripta') {
       A.world.enter(A.world.dungeon);
@@ -861,6 +863,8 @@ G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
     G.updateLoot(dt);
     G.updateNodes(dt);
     G.updateNpcs(dt);
+    G.updateAnimals(dt);
+    G.updateEvents(dt);
     G.updateInteractables();
     G.updateQuestTrack(dt);
     G.updateRegen(dt);
@@ -3295,6 +3299,89 @@ G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
     });
   };
 
+  G.animalPos = function (id) {
+    const a = (A.ANIMALS || []).find(x => x.id === id);
+    if (!a) return null;
+    if (!G.animalState[id]) {
+      const w = G.nearestWalkableTile(a.x, a.y, 6);
+      G.animalState[id] = { x: w ? w.x * T + 16 : a.x * T + 16, y: w ? w.y * T + 18 : a.y * T + 18, dest: null, wait: 0, speed: 24 };
+    }
+    return { x: G.animalState[id].x, y: G.animalState[id].y };
+  };
+
+  G.updateAnimals = function (dt) {
+    if (!dt || dt <= 0) dt = 0.016;
+    if (A.world.isDungeon()) return;
+    if (A.world.active !== A.world.overworld) return;
+    G._animalTimer = (G._animalTimer || 0) + dt;
+    const tick = G._animalTimer >= 0.2;
+    if (tick) G._animalTimer = 0;
+
+    (A.ANIMALS || []).forEach(a => {
+      let st = G.animalState[a.id];
+      if (!st) {
+        const w = G.nearestWalkableTile(a.x, a.y, 6);
+        st = { x: w ? w.x * T + 16 : a.x * T + 16, y: w ? w.y * T + 18 : a.y * T + 18, dest: null, wait: 0, speed: 24 };
+        G.animalState[a.id] = st;
+      }
+      // só processa animais próximos da câmera, para economia
+      const camX = G.cam ? G.cam.x : 0, camY = G.cam ? G.cam.y : 0;
+      if (st.x < camX - 200 || st.x > camX + A.VW + 200 || st.y < camY - 200 || st.y > camY + A.VH + 200) {
+        // mantém estado, mas não move
+        return;
+      }
+      st.wait -= dt;
+      if (st.dest) {
+        const dd = Math.hypot(st.dest.x - st.x, st.dest.y - st.y);
+        if (dd < 4) { st.x = st.dest.x; st.y = st.dest.y; st.dest = null; st.wait = 1 + Math.random() * 3; }
+        else {
+          const dx = st.dest.x - st.x, dy = st.dest.y - st.y, d = Math.hypot(dx, dy);
+          const step = Math.min(st.speed * dt, d);
+          const nx = st.x + (dx / d) * step, ny = st.y + (dy / d) * step;
+          if (G.canStand(nx, ny, 4)) { st.x = nx; st.y = ny; }
+          else { st.dest = null; st.wait = 1; }
+        }
+        return;
+      }
+      if (st.wait > 0) return;
+      if (!tick) return;
+      // escolhe novo destino dentro da área
+      const area = a.area || { x0: a.x - 2, y0: a.y - 2, x1: a.x + 2, y1: a.y + 2 };
+      for (let i = 0; i < 10; i++) {
+        const tx = area.x0 + Math.floor(Math.random() * (area.x1 - area.x0 + 1));
+        const ty = area.y0 + Math.floor(Math.random() * (area.y1 - area.y0 + 1));
+        const w = G.nearestWalkableTile(tx, ty, 4);
+        if (w) { st.dest = { x: w.x * T + 16, y: w.y * T + 18 }; break; }
+      }
+    });
+  };
+
+  G.updateEvents = function (dt) {
+    if (!G.player || A.world.isDungeon()) return;
+    const p = G.player;
+    if (!p.eventState || typeof p.eventState !== 'object') p.eventState = {};
+    const hour = (G.worldClock || 0) / 3600;
+    (A.EVENTS || []).forEach(ev => {
+      const st = p.eventState[ev.id] || 'pending';
+      if (st === 'resolved') return;
+      if (hour >= ev.startHour && hour < ev.endHour) {
+        if (st !== 'active') {
+          p.eventState[ev.id] = 'active';
+          if (!p.story) p.story = { chapter: 1, step: 0, flags: {} };
+          if (!p.story.flags) p.story.flags = {};
+          p.story.flags[ev.flag] = true;
+          if (ev.npc && ev.memory) A.sys.remember(p, ev.npc, ev.memory, 'evento');
+          A.ui.toast(ev.name, 'quest');
+          A.ui.addChat('sistema', null, 'Um acontecimento ocorre na praça.', null);
+          G.saveTimer = Math.max(G.saveTimer, 15);
+        }
+      } else if (st === 'active') {
+        p.eventState[ev.id] = 'resolved';
+        G.saveTimer = Math.max(G.saveTimer, 15);
+      }
+    });
+  };
+
   G.updateInteractables = function () {
     const p = G.player;
     if (!p) return;
@@ -3414,7 +3501,7 @@ G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
     const avail = A.dialogue.availableOptions(node, p);
     const opt = avail.find(o => o._idx === idx);
     if (!opt) return;
-    A.dialogue.applyEffect(opt.effect, p);
+    A.dialogue.applyEffect(opt.effect, p, npcId);
     // serviço solicitado pelo diálogo
     if (p._pendingService) {
       const svc = p._pendingService;
@@ -4053,6 +4140,26 @@ G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
           ctx.strokeText(n.name, nx, ny - 68 + bob);
           ctx.fillText(n.name, nx, ny - 68 + bob);
         }
+      });
+    });
+
+    // animais (Etapa 5)
+    (A.ANIMALS || []).forEach(a => {
+      const pos = G.animalPos(a.id);
+      if (!pos) return;
+      if (pos.x < camX - 100 || pos.x > camX + VW + 100 || pos.y < camY - 100 || pos.y > camY + VH + 180) return;
+      addD(pos.y, () => {
+        ctx.fillStyle = 'rgba(0,0,0,.18)';
+        ctx.beginPath(); ctx.ellipse(pos.x, pos.y + 1, 9, 4, 0, 0, 6.283); ctx.fill();
+        ctx.fillStyle = a.color || '#c9c4d6';
+        ctx.beginPath(); ctx.ellipse(pos.x, pos.y - 6, 8, 6, 0, 0, 6.283); ctx.fill();
+        ctx.fillStyle = '#2a1a0a';
+        ctx.beginPath(); ctx.arc(pos.x - 4, pos.y - 8, 2, 0, 6.283); ctx.fill();
+        ctx.beginPath(); ctx.arc(pos.x + 4, pos.y - 8, 2, 0, 6.283); ctx.fill();
+        ctx.font = '9px Segoe UI'; ctx.textAlign = 'center';
+        ctx.fillStyle = '#f0e8dc'; ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.lineWidth = 3;
+        ctx.strokeText(a.name, pos.x, pos.y - 16);
+        ctx.fillText(a.name, pos.x, pos.y - 16);
       });
     });
 
