@@ -69,7 +69,7 @@
         { label: 'O que você ouviu?', next: 'detalhe' },
         { label: 'Talvez seja só o vento.', next: 'vento' },
         { label: 'Voltei sobre os sussurros.', next: 'depois', condition: { hasFlag: 'arc1_investigando' } },
-        { label: 'Sobre as descobertas recentes.', next: 'descobertas', condition: { hasFlag: 'arc1_primeiro_arco' } },
+        { label: 'Sobre as descobertas recentes.', next: 'descobertas', condition: { hasFlag: 'arc1_indicios_reunidos' } },
         { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros', changeRelation: 1 } }
       ]
     },
@@ -332,7 +332,7 @@
         if (npc) A.sys.setRelation(p, npc, (spec.value != null ? spec.value : e.setRelation));
       }
       if (e.remember != null) {
-        const spec = (typeof e.remember === 'string') ? { id: e.remember } : e.remember;
+        const spec = (typeof e.remember === 'string') ? Object.assign({ id: e.remember }, e) : e.remember;
         const npc = spec.npc || targetNpc;
         if (npc) A.sys.remember(p, npc, spec.id || spec.memory, spec.type, spec.data);
       }
@@ -342,7 +342,7 @@
         if (npc) A.sys.forgetMemory(p, npc, spec.id || spec.memory);
       }
       if (e.learn != null) {
-        const spec = (typeof e.learn === 'string') ? { id: e.learn } : e.learn;
+        const spec = (typeof e.learn === 'string') ? Object.assign({ id: e.learn }, e) : e.learn;
         const npc = spec.npc || targetNpc;
         if (npc) A.sys.learn(p, npc, spec.id || spec.knowledge, spec.data);
       }

@@ -1923,7 +1923,7 @@
       const st = A.game.dialogueState;
       const node = (st && st.nodeId) ? A.dialogue.getNode(dlgId, st.nodeId) : null;
       if (node) {
-        const avail = A.dialogue.availableOptions(node, p);
+        const avail = A.dialogue.availableOptions(node, p, npc.id);
         const optsHtml = avail.map(o => '<button class="btn" data-act="dialogue-choice" data-npc="' + npc.id + '" data-idx="' + o._idx + '">' + esc(o.label) + '</button>').join('');
         contentHtml = '<div class="npc-greet">“' + esc(node.text) + '”</div><div class="npc-options">' + optsHtml + '</div>';
       } else {

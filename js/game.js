@@ -3498,7 +3498,7 @@ G.npcState = {}; G._npcReplanTimer = 0; G.animalState = {}; G._animalTimer = 0; 
     if (!dlg) { G.dialogueState = null; A.ui.refreshWin('npc'); return; }
     const node = dlg[G.dialogueState.nodeId];
     if (!node || !Array.isArray(node.options)) { G.dialogueState = null; A.ui.refreshWin('npc'); return; }
-    const avail = A.dialogue.availableOptions(node, p);
+    const avail = A.dialogue.availableOptions(node, p, npcId);
     const opt = avail.find(o => o._idx === idx);
     if (!opt) return;
     A.dialogue.applyEffect(opt.effect, p, npcId);

@@ -5,8 +5,8 @@ const { open, boot, ok, fail, summary } = require('./helpers');
   try {
     const { errors } = await boot(page, { name: 'Arco', cls: 'warrior' });
 
-    // Missões do arco existem.
-    const hasArc = await page.evaluate(() => ['arc1_q1','arc1_q2','arc1_q3'].every(id => !!A.sys.questById(id)));
+    // Missões do arco existem (seis missões do primeiro arco).
+    const hasArc = await page.evaluate(() => ['arc1_q1','arc1_q2','arc1_q3','arc1_q4','arc1_q5','arc1_q6'].every(id => !!A.sys.questById(id)));
     if (hasArc) ok('missões do primeiro arco cadastradas');
     else fail('missões do arco faltando');
 
@@ -39,6 +39,14 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     const flag = await page.evaluate(() => !!(A.game.player.story.flags && A.game.player.story.flags.arc1_investigando));
     if (flag) ok('consequência arc1_investigando aplicada');
     else fail('flag não aplicada');
+    const memKey = await page.evaluate(() => {
+      const q = A.sys.questById('arc1_q1');
+      const st = q.stages[q.stages.length - 1];
+      const eff = st && st.onComplete ? st.onComplete[1] : null;
+      return (eff && eff.remember) || null;
+    });
+    const mem = await page.evaluate((k) => A.sys.hasMemory(A.game.player, 'marta', k), memKey);
+    if (mem && memKey) ok('memória de investigação registrada para Marta'); else fail('memória de investigação ausente');
 
     // arc1_q3 registra conhecimento para Irene (requer arc1_q2 concluída).
     await page.evaluate(() => {
@@ -83,6 +91,12 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     const ely = await page.evaluate(() => !!(A.NPCS.find(n => /elyssara/i.test(n.id || n.name)) || (A.DIALOGUES && A.DIALOGUES.elyssara)));
     if (!ely) ok('nenhuma aparição direta de Elyssara');
     else fail('Elyssara apareceu diretamente');
+    const liderNames = ['maevra','seraphine','valerius','edrik','garran'];
+    const liderRevelado = await page.evaluate((names) => {
+      const ids = Object.keys(A.DIALOGUES || {}).concat((A.NPCS || []).map(n => n.id));
+      return ids.filter(id => names.indexOf(id) >= 0).length > 0;
+    }, liderNames);
+    if (!liderRevelado) ok('nenhuma identidade dos cinco líderes revelada'); else fail('líderes revelados prematuramente');
 
     // Encadeamento: missões posteriores não iniciam prematuramente.
     const chain = await page.evaluate(() => {
@@ -161,6 +175,26 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     });
     if (persisted) ok('progresso do arco persiste');
     else fail('persistência do arco falhou');
+
+    // Migração: flag antiga arc1_primeiro_arco → nova arc1_indicios_reunidos.
+    const migrated = await page.evaluate(() => {
+      const p = A.sys.blankCharacter({ cls: 'warrior', name: 'Mig', server: 'aurora' });
+      p.story.flags.arc1_primeiro_arco = true;
+      const restored = A.sys.deserialize(JSON.parse(JSON.stringify(p)));
+      const flags = (restored.story && restored.story.flags) || {};
+      return { oldGone: !('arc1_primeiro_arco' in flags), neu: !!flags.arc1_indicios_reunidos };
+    });
+    if (migrated.neu && migrated.oldGone) ok('migração de flag antiga aplicada'); else fail('migração de flag falhou: ' + JSON.stringify(migrated));
+
+    // Conclusão final do arco consolida a flag de indícios reunidos.
+    const finalFlag = await page.evaluate(() => {
+      const p = A.sys.blankCharacter({ cls: 'warrior', name: 'FinalArco', server: 'aurora' });
+      p.quests['arc1_q6'] = { progress: 1, done: false, claimed: false, stage: 2 };
+      const res = A.sys.turnInQuest(p, 'arc1_q6');
+      const flags = (p.story && p.story.flags) || {};
+      return { flag: !!flags.arc1_indicios_reunidos, res: !!res };
+    });
+    if (finalFlag.flag) ok('conclusão do arco consolida flag de indícios reunidos'); else fail('flag final de arco ausente');
 
     const realErrors = errors.filter(e => !/favicon|ERR_FAILED|net::/i.test(e));
     if (realErrors.length === 0) ok('nenhum erro de página/console');

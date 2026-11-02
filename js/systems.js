@@ -1014,7 +1014,8 @@
     p.quests = p.quests || {};
     Object.keys(p.quests).forEach(id => {
       if (p.quests[id] && p.quests[id].stage == null) p.quests[id].stage = 0;
-    });    p.achievements = p.achievements || {};
+    });
+    p.achievements = p.achievements || {};
     p.look = p.look || {};
     p.pos = p.pos || { x: 73 * A.T + 16, y: 56 * A.T + 16 };
 
@@ -1023,6 +1024,8 @@
     p.stamina = p.stamina == null ? p.staminaMax : A.clamp(Number(p.stamina) || 0, 0, p.staminaMax);
     p.story = Object.assign({ chapter: 1, step: 0, flags: {} }, p.story || {});
     p.story.flags = p.story.flags || {};
+    if (p.story.flags.arc1_primeiro_arco) p.story.flags.arc1_indicios_reunidos = true;
+    delete p.story.flags.arc1_primeiro_arco;
     p.npcRelations = p.npcRelations || {};
     p.npcMemory = p.npcMemory || {};
     p.npcKnowledge = p.npcKnowledge || {};

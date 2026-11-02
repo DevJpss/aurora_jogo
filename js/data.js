@@ -465,14 +465,14 @@ window.A = window.A || {};
       desc: 'Marta ouviu sussurros na praça ao anoitecer. Fale com ela.',
       stages: [
         { id: 'arc1_q1_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'marta', desc: 'Fale com Marta sobre os sussurros.' },
-        { id: 'arc1_q1_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Observe a praça ao anoitecer.', onComplete: [{ setFlag: 'arc1_investigando' }] }
+        { id: 'arc1_q1_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Observe a praça ao anoitecer.', onComplete: [{ setFlag: 'arc1_investigando' }, { remember: 'arc1_investigou_sussurros', type: 'investigacao', npc: 'marta' }] }
       ],
       reward: { gold: 120, xp: 200 } },
     { id: 'arc1_q2', title: 'A Luz que não é Fogo', giver: 'liora', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q1'] },
       desc: 'Liora viu uma luz estranha perto do lago dos campos. Fale com ela.',
       stages: [
         { id: 'arc1_q2_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'liora', desc: 'Fale com Liora sobre a luz.' },
-        { id: 'arc1_q2_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Viaje aos Campos Verdes e observe a luz.', onComplete: [{ setFlag: 'arc1_luz_vista' }] }
+        { id: 'arc1_q2_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Viaje aos Campos Verdes e observe a luz.', onComplete: [{ setFlag: 'arc1_luz_vista' }, { remember: 'arc1_viu_luz', type: 'investigacao', npc: 'liora' }, { learn: 'luz_campos', npc: 'liora' }] }
       ],
       reward: { gold: 150, xp: 260 } },
     { id: 'arc1_q3', title: 'Cinco Nomes no Registro', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q2'] },
@@ -490,7 +490,7 @@ window.A = window.A || {};
       desc: 'Tomás notou comportamentos estranhos nos Campos Verdes. Fale com ele.',
       stages: [
         { id: 'arc1_q4_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'tomas', desc: 'Fale com Tomás sobre os campos.' },
-        { id: 'arc1_q4_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Observe os Campos Verdes e procure marcas incomuns.', onComplete: [{ setFlag: 'arc1_vestigios_campos' }] }
+        { id: 'arc1_q4_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Observe os Campos Verdes e procure marcas incomuns.', onComplete: [{ setFlag: 'arc1_vestigios_campos' }, { remember: 'arc1_vestigios_campos', type: 'investigacao', npc: 'tomas' }] }
       ],
       reward: { gold: 200, xp: 360 } },
     { id: 'arc1_q5', title: 'O Marco Esquecido', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q4'] },
@@ -505,7 +505,7 @@ window.A = window.A || {};
       stages: [
         { id: 'arc1_q6_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'marta', desc: 'Fale com Marta sobre as descobertas.' },
         { id: 'arc1_q6_s2', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'liora', desc: 'Fale com Liora sobre as descobertas.' },
-        { id: 'arc1_q6_s3', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre os registros.', onComplete: [{ setFlag: 'arc1_primeiro_arco' }] }
+        { id: 'arc1_q6_s3', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre os registros.', onComplete: [{ setFlag: 'arc1_indicios_reunidos' }] }
       ],
       reward: { gold: 260, xp: 480 } }
   );
