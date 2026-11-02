@@ -22,13 +22,13 @@ com duas masmorras e endgame (fendas, raid, arena, faccões, temporada).
 
 | ID | Decisão | Notas |
 |---|---|---|
-| D1 | ~20h até o nível 60, sustentado por mais história e missões secundárias. | Hoje a campanha tem 8 capítulos/40 missões; ver `ROADMAP.md` (frente B). |
+| D1 | ~20h até o nível 60, sustentado por mais história e missões secundárias. | Hoje a campanha tem 8 capítulos/40 missões; ver `ROADMAP.md` (frente B). Incluir contador de tempo de jogo (playtime/tempo até 60) como métrica de balanceamento. |
 | D2 | Auto-hunt (tecla `R`) desbloqueado por marco da história; serve de grind de XP antes e depois do nível 60. | Hoje `R` está livre desde o nível 1 (`game.js` 1643/1675). |
-| D3 | Depois do 60: um segundo nível de personagem (nome a definir) que continua subindo, com um pouco de status por nível; o XP excedente vai para ele. | `S.gainXp` (`systems.js` 131) hoje trava em `p.level < 60`. |
-| D4 | +3 classes: Ladino (adagas), Monge (punhos), Bardo (instrumento). | Hoje existem 4 classes (`data.js` 35-68). |
+| D3 | Depois do 60: um segundo nível de personagem (nome a definir) que continua subindo, com um pouco de status por nível; o XP excedente vai para ele. | `S.gainXp` (`systems.js` 131) hoje trava em `p.level < 60`. Implementar antes de D4 (frente E antes de D) para validar save/XP. |
+| D4 | +3 classes: Ladino (adagas), Monge (punhos), Bardo (instrumento). | Hoje existem 4 classes (`data.js` 35-68). Monge usa manoplas no slot de arma; Bardo usa canções (buff + AoE); classes entregues de forma incremental (Ladino → Monge → Bardo). |
 | D5 | Evolução nos níveis 20, 40 e 60, em eventos da história: no 20 o jogador escolhe 1 de 3 linhas; no 40 e no 60 avança em linha reta dentro dela (7 classes x 3 linhas x 3 estágios). | Hoje não há sistema de evolução de classe. |
 | D6 | Saves atuais descartáveis (sem migração). | `A.SAVE_VERSION = 4` (`data.js` 18-21); saves antigos podem ser ignorados. |
-| D7 | Missões com NPCs no local, que podem reaparecer em outras áreas por motivo narrativo. | Hoje a entrega exige voltar ao NPC giver (ver `ROADMAP.md`). |
+| D7 | Missões com NPCs no local, que podem reaparecer em outras áreas por motivo narrativo. | Hoje a entrega exige voltar ao NPC giver (ver `ROADMAP.md`). Piloto em uma única missão de Campos Verdes (q2) antes de converter as demais. |
 
 ---
 
@@ -61,8 +61,8 @@ Regra: manter separação conteúdo/mundo/sistemas/UI/loop. Nenhuma regra de gam
 ## 5. Em aberto
 
 - Nome e curva do nível pós-60 (D3): limite máximo ou retornos decrescentes? Quanto de status por nível?
-- Como o Bardo funciona em jogo solo (D4): suporte sem grupo real; buffs próprios? dano por música?
-- O que ocupa o slot de arma do Monge (D4): punhos como arma base, ou slot vazio com bônus de mãos livres?
+- Como o Bardo funciona em jogo solo (D4): resolvido — canções que dão bônus a si mesmo e efeito em área sobre inimigos (híbrido buff+dano), sem depender de grupo real.
+- O que ocupa o slot de arma do Monge (D4): resolvido — manoplas no slot de arma (raridades, drops e bônus como nas outras classes).
 - Em que capítulo ficam o desbloqueio do auto-hunt (D2) e as evoluções (D5) nos níveis 20, 40 e 60?
 - Nome do segundo nível de personagem (D3).
 - Se missões com NPCs no local (D7) exigem reescrita do rastreio ou só do ponto de entrega.

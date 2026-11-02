@@ -68,33 +68,34 @@ Estimativa de ajuste:
 
 ### Frente A - Entrega de missões com NPCs no local (D7)
 - Objetivo: permitir turn-in onde o NPC estiver, reduzindo retorno a vila.
+- Piloto (1 missão): q2 “Limpeza dos Campos” (Campos Verdes). Novo NPC local `guarda_campos` presente enquanto q2 existe; q2 passa a ter `giver` e `turnInNpc` = `guarda_campos`. Validar o modelo antes de converter as outras missões.
 - Arquivos: `js/game.js` (questGoal, updateQuestTrack, openNpc), `js/systems.js` (talkTo, turnInQuest), `js/ui.js` (questCard, WINS.npc), `js/data.js` (NPCs e suas áreas).
 - Riscos: rastreio pode apontar para NPC errado; auto-hunt pode interferir; missões `type: 'talk'` dependem de S.talkTo.
 - Testes que vão quebrar de propósito: `tests/campaign.js` linhas 26-32 (turnInQuest q1 espera next q2), linhas 17-18 (contagens). `tests/navigation.js` se rastreio mudar.
 
-### Frente B - Ritmo de 20h (D1)
-- Objetivo: mais história e missões secundárias; suavizar vales de XP.
-- Arquivos: `js/data.js` (QUESTS, CHAPTERS, SIDE_QUESTS, MONSTERS), `js/systems.js` (xpNeed, gainXp, chapterUnlocked), `js/game.js` (spawn, zoneLevel).
+### Frente B - História e ritmo de 20h (D1)
+- Objetivo: mais história e missões secundárias; suavizar vales de XP; incluir contador de tempo de jogo (playtime/tempo até 60) como métrica.
+- Arquivos: `js/data.js` (QUESTS, CHAPTERS, SIDE_QUESTS, MONSTERS), `js/systems.js` (xpNeed, gainXp, chapterUnlocked), `js/game.js` (spawn, zoneLevel, playtime).
 - Riscos: balanceamento; gates de nível; testes de contagem.
 - Testes que vão quebrar de propósito: `tests/campaign.js` linhas 17-18 (`chapters === 8`, `quests === 40`), linha 20 (monstros >= 24). `tests/endgame.js` se XP mudar recompensas.
 
 ### Frente C - Auto-hunt desbloqueado por marco (D2)
-- Objetivo: gating de R por história; servir de grind antes e depois do 60.
+- Objetivo: gating de R por história (marco definido em B); servir de grind antes e depois do 60.
 - Arquivos: `js/game.js` (setAutoHunt, toggleAutoHunt, hotkey R), `js/ui.js` (botão AUTO, HUD), `js/systems.js` (applyUnlocks), `js/data.js` (unlocks).
 - Riscos: jogadores acostumados com R livre; testes de AUTO.
 - Testes que vão quebrar de propósito: `tests/navigation.js` (AUTO contorna taverna), `tests/combat.js` (AUTO usa esquiva), `tests/smoke.js` se HUD mudar.
-
-### Frente D - Classes novas e evolução (D4, D5)
-- Objetivo: Ladino, Monge, Bardo; evolução nos níveis 20/40/60 com 3 linhas.
-- Arquivos: `js/data.js` (CLASSES, SKILLS, ITEM_BASES, A.ITEM_NAMES), `js/art.js` (sprites/icones), `js/systems.js` (blankCharacter, recalc, serialize/deserialize), `js/game.js` (combate, useSkill), `js/ui.js` (criação, personagem, skills).
-- Riscos: alto; combate por classe; save schema.
-- Testes que vão quebrar de propósito: `tests/smoke.js` (save v4, migração), `tests/campaign.js` (monstros), `tests/combat.js` (telegrafia/AUTO).
 
 ### Frente E - Nível pós-60 (D3)
 - Objetivo: segundo nível que continua subindo com status; XP excedente.
 - Arquivos: `js/systems.js` (gainXp, blankCharacter, serialize/deserialize), `js/ui.js` (HUD, personagem), `js/game.js` (onLevelUp), `js/data.js` (SAVE_VERSION).
 - Riscos: save version bump; migração (D6 permite descartar).
 - Testes que vão quebrar de propósito: `tests/smoke.js` ("personagem antigo migra para v4 com nível limitado a 60", "save marcado como versão 4").
+
+### Frente D - Classes novas e evolução (D4, D5)
+- Objetivo: Ladino, Monge, Bardo; evolução nos níveis 20/40/60 com 3 linhas. Monge usa manoplas no slot de arma; Bardo usa canções (buff + AoE); classes implementadas de forma incremental (Ladino → Monge → Bardo), não todas de uma vez.
+- Arquivos: `js/data.js` (CLASSES, SKILLS, ITEM_BASES, A.ITEM_NAMES), `js/art.js` (sprites/icones), `js/systems.js` (blankCharacter, recalc, serialize/deserialize), `js/game.js` (combate, useSkill), `js/ui.js` (criação, personagem, skills).
+- Riscos: alto; combate por classe; save schema.
+- Testes que vão quebrar de propósito: `tests/smoke.js` (save v4, migração), `tests/campaign.js` (monstros), `tests/combat.js` (telegrafia/AUTO).
 
 ### Frente F - Missões com NPCs no local (refino de A + narrativa)
 - Depende de A e B. Define em quais áreas NPCs reaparecem e por quê.
@@ -112,6 +113,6 @@ Estimativa de ajuste:
 
 ## 6. Ordem recomendada
 
-0 (docs) -> A (entrega no local) -> B (ritmo 20h) -> C (auto-hunt gating) -> D (classes/evolução) -> E (nível pós-60) -> F (refino narrativo).
+0 (docs) -> A (entrega no local) -> B (história/ritmo 20h) -> C (auto-hunt gating) -> E (nível pós-60) -> D (classes/evolução) -> F (refino narrativo).
 
-Justificativa: entrega no local (A) e ritmo (B) são conteúdo/design e destravam testes de campanha; auto-hunt gating (C) depende de marcos de história definidos em B; classes (D) e nível pós-60 (E) são mudanças estruturais de save/combate e devem vir depois do conteúdo base.
+Justificativa: entrega no local (A) e ritmo (B) são conteúdo/design e destravam testes de campanha; auto-hunt gating (C) depende de marcos de história definidos em B; nível pós-60 (E) é pequeno e independente e valida save/XP antes da expansão de classes (D); classes (D) são mudanças estruturais de save/combate e vêm depois do conteúdo base.
