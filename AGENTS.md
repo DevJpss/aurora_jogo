@@ -43,3 +43,14 @@ O jogo possui fluxo de boot, menu, título, login, servidores simulados, seleç�
 - Ao delegar, informe a seção e a faixa de linhas do mapa.
 - Se o mapa divergir do código, o código vence — e o mapa deve ser atualizado.
 - Uma tarefa por branch; só agentes com `edit: allow` alteram arquivos.
+
+## Fluxo de tarefa
+
+1. Uma branch por assunto (tipo/nome, ex.: `docs/readme-zonas`).
+2. Antes de editar: liste com `Select-String` o que vai mudar e mostre.
+3. Mudança mínima. Commits separados quando o assunto for diferente.
+4. Mostre `git diff --stat` e o diff. Para cada número ou afirmação, cite símbolo e linha do código que a sustenta.
+5. Confirme que a mudança está commitada na branch e que `git status` está limpo.
+6. Pare e peça aprovação. Nunca faça merge nem apague branch sem aprovação.
+7. Depois do OK: `git switch master`, merge, `git log --oneline -4` e apagar a branch.
+8. Diffs com mais de 20 linhas: peça revisão ao `@qa`, que deve usar um modelo diferente do que escreveu o código.
