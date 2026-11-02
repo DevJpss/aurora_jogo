@@ -81,9 +81,9 @@ Os menus do jogo são janelas flutuantes e **não fecham umas às outras**:
 - Rastreamento de missões com clique no HUD ou na janela, viagem automática, entrada em masmorra e retorno para entrega.
 - Distribuição de atributos com `+`, `−`, Redistribuir e repetição ao segurar.
 - Monstros normais, elites, chefe, invocações e recompensas.
-- Missões principais e diárias, conquistas, XP e progressão até o nível 18+.
+- Missões principais e diárias, conquistas, XP e progressão até o nível 60.
 - Lojas, ferreiro/criação, banco, correio, leilão, grupo, guilda e viagem rápida.
-- Coleta de ervas, minério e cristais; masmorra com chefe e saída.
+- Coleta de ervas, minério e cristais; duas masmorras com chefe e saída.
 - Chat com canais, bots simulados, ping/população, minimapa e tela cheia.
 - Layout responsivo com joystick e botões de toque no celular.
 
