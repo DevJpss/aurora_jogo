@@ -28,6 +28,7 @@
   G.worldClock = 8 * 3600;
   G.npcState = {};
   G._npcReplanTimer = 0;
+  G.dialogueState = null;
   G.dayLen = 900;
   G.settings = Object.assign({}, DEFAULTS);
   G.accounts = {};
@@ -405,7 +406,7 @@
     G.worldClock = 8 * 3600;
     G.combat = 0;
     G.nearNpc = null; G.nearNode = null; G.nearPortal = null; G.nearExit = null;
-G.npcState = {}; G._npcReplanTimer = 0;
+G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
 
     if (p.map === 'cripta') {
       A.world.enter(A.world.dungeon);
@@ -3391,9 +3392,48 @@ G.npcState = {}; G._npcReplanTimer = 0;
     }
     const changed = A.sys.talkTo(G.player, npc.id);
     if (changed) A.ui.toast('Missão pronta: ' + changed.title, 'quest');
+    if (npc.dialogueId && A.DIALOGUES && A.DIALOGUES[npc.dialogueId]) {
+      G.dialogueState = { npcId: npc.id, dialogueId: npc.dialogueId, nodeId: 'start' };
+    } else {
+      G.dialogueState = null;
+    }
+    // serviço pendente solicitado por diálogo anterior é limpo ao abrir.
+    if (G.player) G.player._pendingService = null;
     A.ui.openWin('npc', { npc: npc.id });
     A.audio.play('open');
     if (A.sys.questProgress(G.player, 'q1').done) A.ui.updateHUD(true);
+  };
+
+  G.dialogueChoose = function (npcId, idx) {
+    const p = G.player;
+    if (!p || !G.dialogueState || G.dialogueState.npcId !== npcId) return;
+    const dlg = A.DIALOGUES[G.dialogueState.dialogueId];
+    if (!dlg) { G.dialogueState = null; A.ui.refreshWin('npc'); return; }
+    const node = dlg[G.dialogueState.nodeId];
+    if (!node || !Array.isArray(node.options)) { G.dialogueState = null; A.ui.refreshWin('npc'); return; }
+    const avail = A.dialogue.availableOptions(node, p);
+    const opt = avail.find(o => o._idx === idx);
+    if (!opt) return;
+    A.dialogue.applyEffect(opt.effect, p);
+    // serviço solicitado pelo diálogo
+    if (p._pendingService) {
+      const svc = p._pendingService;
+      p._pendingService = null;
+      // executa após refresh, para não aninhar renderizações
+      setTimeout(function () {
+        if (G.npcAction) G.npcAction(npcId, svc);
+      }, 0);
+    }
+    if (opt.end) {
+      if (G.dialogueState) G.dialogueState.nodeId = null;
+    } else if (opt.next && dlg[opt.next]) {
+      G.dialogueState.nodeId = opt.next;
+    } else {
+      if (G.dialogueState) G.dialogueState.nodeId = null;
+    }
+    A.ui.refreshWin('npc');
+    A.ui.updateHUD(true);
+    G.saveTimer = Math.max(G.saveTimer, 15);
   };
 
   G.npcAction = function (npcId, opt) {

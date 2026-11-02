@@ -388,6 +388,7 @@
       }
       case 'guild-join': G.joinGuild(d.name); U.refreshWin(); break;
       case 'guild-leave': G.leaveGuild(); U.refreshWin(); break;
+      case 'dialogue-choice': G.dialogueChoose(d.npc, parseInt(d.idx, 10)); break;
       case 'npc-action': G.npcAction(d.npc, d.opt); break;
       case 'shop-buy': G.buyShop(d); U.refreshWin(); break;
       case 'shop-tab': U.tabs.shop = d.tab; U.refreshWin('shop'); break;
@@ -1903,10 +1904,32 @@
     if (npc.id === 'sella') { opts += Q('📜 Missões dos Picos', 'quests'); opts += Q('💡 Como jogar', 'help'); }
     if (npc.id === 'quadro') { opts += Q('📋 Contratos diários', 'quests'); }
     if (npc.prop) opts = Q('📋 Ver contratos', 'quests');
+
+    // Diálogo estruturado (Etapa 2): usado apenas se o NPC tiver dialogueId válido.
+    const dlgId = npc.dialogueId;
+    const dlg = dlgId && A.DIALOGUES && A.DIALOGUES[dlgId];
+    let contentHtml = '';
+    if (dlg) {
+      if (!A.game.dialogueState || A.game.dialogueState.npcId !== npc.id) {
+        A.game.dialogueState = { npcId: npc.id, dialogueId: dlgId, nodeId: 'start' };
+      }
+      const st = A.game.dialogueState;
+      const node = (st && st.nodeId) ? A.dialogue.getNode(dlgId, st.nodeId) : null;
+      if (node) {
+        const avail = A.dialogue.availableOptions(node, p);
+        const optsHtml = avail.map(o => '<button class="btn" data-act="dialogue-choice" data-npc="' + npc.id + '" data-idx="' + o._idx + '">' + esc(o.label) + '</button>').join('');
+        contentHtml = '<div class="npc-greet">“' + esc(node.text) + '”</div><div class="npc-options">' + optsHtml + '</div>';
+      } else {
+        contentHtml = '<div class="npc-greet">“' + esc(greet[npc.id] || 'Bem-vindo a Aurora.') + '”</div>';
+      }
+    } else {
+      contentHtml = '<div class="npc-greet">“' + esc(greet[npc.id] || 'Bem-vindo a Aurora.') + '”</div>';
+    }
+
     return {
       title: npc.name, icon: npc.marker === 'shop' ? 'coin' : npc.marker === 'quest' ? 'scroll' : 'users', sub: role, cls: 'small',
       body: '<div class="npc-dialog"><div class="npc-side"><canvas id="npcCanvas" width="110" height="110"></canvas><div class="npc-name">' + esc(npc.name) + '</div><div class="npc-role">' + esc(role) + '</div></div>' +
-        '<div class="npc-main"><div class="npc-greet">“' + esc(greet[npc.id] || 'Bem-vindo a Aurora.') + '”</div><div class="npc-options">' + opts + '</div></div></div>'
+        '<div class="npc-main">' + contentHtml + '<div class="npc-options">' + opts + '</div></div></div>'
     };
   };
 

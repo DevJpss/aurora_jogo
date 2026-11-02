@@ -213,7 +213,7 @@ window.A = window.A || {};
   /* ------------------------------------------------------------------ */
   A.NPCS = [
     { id: 'aldric', name: 'Mestre Aldric', role: 'Mestre da Guilda', x: 68, y: 47, look: { outfit: '#6a4aa8', skin: '#f0c9a0', hair: '#e9e9f4', beard: '#f4f4fa', hat: '#5a3fa0' }, marker: 'quest' },
-    { id: 'orla',   name: 'Mercadora Orla', role: 'Mercadora', x: 62, y: 55, look: { outfit: '#3f8f5a', skin: '#f2c9a0', hair: '#8a4a22', apron: true }, marker: 'shop', kind: 'merchant', dialogueId: null,
+    { id: 'orla',   name: 'Mercadora Orla', role: 'Mercadora', x: 62, y: 55, look: { outfit: '#3f8f5a', skin: '#f2c9a0', hair: '#8a4a22', apron: true }, marker: 'shop', kind: 'merchant', dialogueId: 'orla',
   // Rotina simples de Etapa 1: alterna entre a loja (dia) e a praça (noite).
   // Campos opcionais: NPCs sem `schedule` continuam estáticos.
   schedule: [ { from: 6, to: 18, x: 62, y: 55 }, { from: 18, to: 6, x: 68, y: 55 } ] },
