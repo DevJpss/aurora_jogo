@@ -13,6 +13,7 @@
       options: [
         { label: 'Quero ver as poções.', next: 'shop' },
         { label: 'Como está a vila hoje?', next: 'vila' },
+        { label: 'Sobre o selo...', next: 'selo', condition: { questActive: 'q26' } },
         { label: 'Já nos falamos antes?', next: 'memoria', condition: { hasFlag: 'orla_conversou' } },
         { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
       ]
@@ -28,6 +29,13 @@
       text: 'Ah, você de novo! Bom ver que ainda está de pé. Volte sempre que precisar.',
       options: [
         { label: 'Até mais, Orla.', end: true }
+      ]
+    },
+    selo: {
+      text: 'O selo de Aurora treme. Se Aldric pediu o Núcleo Glacial, é porque a Cidadela já respira. Tenha cuidado.',
+      options: [
+        { label: 'Obrigado, Orla.', next: 'start' },
+        { label: 'Encerrar conversa.', end: true, effect: { setFlag: 'orla_conversou' } }
       ]
     },
     shop: {

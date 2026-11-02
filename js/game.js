@@ -2047,7 +2047,7 @@ G.npcState = {}; G._npcReplanTimer = 0; G.dialogueState = null;
   G.trackQuest = function (id, daily) {
     const p = G.player;
     if (!p) return;
-    const q = A.sys.questById(id);
+    const q = (A.sys.questCurrent ? A.sys.questCurrent(id, p) : A.sys.questById(id));
     const dl = p.dailies && p.dailies.list ? p.dailies.list.find(x => x.id === id) : null;
     const st = p.quests[id];
     // O mesmo id pode existir como missão do Quadro e como diária. O botão

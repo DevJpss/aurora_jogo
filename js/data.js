@@ -328,6 +328,12 @@ window.A = window.A || {};
     // Capítulo 6 — A Cidadela do Eclipse (Nv 44–52)
     { id: 'q26', chapter: 6, title: 'O Selo se Rompe', giver: 'aldric', type: 'talk', need: 1, target: '', zone: 'vila',
       desc: 'Retorne a Mestre Aldric com o Núcleo Glacial.',
+      stages: [
+        { id: 'q26_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'aldric', desc: 'Fale com Mestre Aldric sobre o Núcleo Glacial.' },
+        { id: 'q26_s2', type: 'explore', need: 1, target: 'vila', zone: 'vila', desc: 'Permaneça na praça da Vila Aurora e prepare-se para o selo.' },
+        { id: 'q26_s3', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'aldric', desc: 'Confirme a Aldric que está pronto para a Cidadela.',
+          onComplete: [{ setFlag: 'q26_selos_rompidos' }] }
+      ],
       reward: { gold: 1400, xp: 5000, items: [{ id: 'potion_hp', qty: 10 }] } },
     { id: 'q27', chapter: 6, title: 'Portões da Cidadela', giver: 'arauto', type: 'dungeon', need: 8, target: 'eclipse_knight', zone: 'cidadela', dungeon: 'cidadela',
       desc: 'Entre na Cidadela do Eclipse pelos Picos e derrote 8 Cavaleiros.',

@@ -438,6 +438,28 @@
     return A.QUESTS.find(q => q.id === id) || A.SIDE_QUESTS.find(q => q.id === id);
   };
 
+  // Missões podem ter etapas opcionais (`stages`). Missões antigas não têm.
+  S.questStageIndex = function (p, id) {
+    const q = S.questById(id);
+    if (!q || !Array.isArray(q.stages) || !q.stages.length) return 0;
+    const st = p && p.quests ? p.quests[id] : null;
+    const idx = st ? (Number(st.stage) || 0) : 0;
+    return Math.max(0, Math.min(q.stages.length - 1, idx));
+  };
+
+  // Retorna a missão com os campos da etapa atual mesclados (tipo, alvo, zona, desc, etc.).
+  S.questCurrent = function (id, p) {
+    const q = S.questById(id);
+    if (!q) return null;
+    if (!Array.isArray(q.stages) || !q.stages.length) return q;
+    const idx = S.questStageIndex(p || {}, id);
+    const stage = q.stages[idx] || q.stages[0];
+    const merged = Object.assign({}, q, stage);
+    merged._stageIndex = idx;
+    merged._stageCount = q.stages.length;
+    return merged;
+  };
+
   S.chapterOf = function (id) {
     return A.CHAPTERS.find(ch => ch.quests.indexOf(id) >= 0) || null;
   };
@@ -528,24 +550,24 @@
   S.initQuests = function (p) {
     p.quests = {};
     p.mainIndex = 0;
-    p.quests.q1 = { progress: 0, done: false, claimed: false };
+    p.quests.q1 = { progress: 0, done: false, claimed: false, stage: 0 };
     S.syncCampaign(p, true);
   };
 
   S.startQuest = function (p, id) {
     if (p.quests[id]) return;
-    p.quests[id] = { progress: 0, done: false, claimed: false };
+    p.quests[id] = { progress: 0, done: false, claimed: false, stage: 0 };
   };
 
   S.activeQuests = function (p) {
     return Object.keys(p.quests)
-      .map(id => ({ id, data: S.questById(id), st: p.quests[id] }))
+      .map(id => ({ id, data: S.questCurrent(id, p), st: p.quests[id] }))
       .filter(q => q.data && !q.st.claimed);
   };
 
   S.questProgress = function (p, id) {
     const st = p.quests[id];
-    const data = S.questById(id);
+    const data = S.questCurrent(id, p);
     if (!st || !data) return { cur: 0, need: 1, done: false };
     let cur = st.progress;
     if (data.type === 'collect') cur = Math.max(cur, S.countItem(p, data.target));
@@ -599,13 +621,63 @@
   };
 
   S.turnInQuest = function (p, id) {
-    const d = S.questById(id), st = p.quests[id];
-    if (!d || !st) return null;
+    const base = S.questById(id), st = p.quests[id];
+    if (!base || !st) return null;
+    const d = S.questCurrent(id, p);
     const pr = S.questProgress(p, id);
     if (!pr.done || st.claimed) return null;
+
+    const applyEffects = (eff) => {
+      if (eff && A.dialogue && typeof A.dialogue.applyEffect === 'function') A.dialogue.applyEffect(eff, p);
+      else if (eff && typeof eff === 'object') {
+        // fallback mínimo: flags
+        if (!p.story) p.story = { chapter: 1, step: 0, flags: {} };
+        if (!p.story.flags) p.story.flags = {};
+        Object.keys(eff).forEach(k => {
+          if (k === 'setFlag' || k === 'flag') p.story.flags[eff[k === 'setFlag' ? 'setFlag' : 'flag']] = (eff.value === undefined ? true : eff.value);
+          if (k === 'unsetFlag') delete p.story.flags[eff.unsetFlag];
+        });
+      }
+    };
+
+    const hasStages = Array.isArray(base.stages) && base.stages.length > 0;
+    const stageIdx = hasStages ? (Number(st.stage) || 0) : 0;
+    const isLast = !hasStages || stageIdx >= base.stages.length - 1;
+
+    // Recompensa da etapa atual (se houver) ou da missão.
+    const stageDef = hasStages ? (base.stages[stageIdx] || {}) : {};
+    const rw = (stageDef.reward ? stageDef.reward : (d.reward || d.rewards || base.reward || base.rewards || {}));
+
+    // Efeitos ao concluir a etapa atual.
+    if (stageDef.onComplete) applyEffects(stageDef.onComplete);
+    if (stageDef.effects) applyEffects(stageDef.effects);
+
+    if (!isLast) {
+      // Avança para a próxima etapa, sem marcar como concluída.
+      st.stage = stageIdx + 1;
+      st.progress = 0;
+      st.done = false;
+      // Recompensa parcial da etapa, se definida.
+      if (rw && (rw.gold || rw.xp || rw.items)) {
+        p.gold += rw.gold || 0;
+        const levels = S.gainXp(p, rw.xp || 0);
+        const items = [];
+        (rw.items || []).forEach(it => {
+          const item = S.makeStack(it.id, it.qty);
+          if (S.addItem(p, item, it.qty)) items.push(item);
+        });
+        S.checkAchievements(p);
+        return { reward: rw, levels, items, nextStage: st.stage, advanced: true };
+      }
+      S.checkAchievements(p);
+      return { reward: rw, levels: [], items: [], nextStage: st.stage, advanced: true };
+    }
+
+    // Última etapa (ou missão sem etapas): conclui de fato.
     st.claimed = true;
     st.done = true;
-    const rw = d.reward || d.rewards || {};
+    if (hasStages) st.stage = base.stages.length - 1;
+
     p.gold += rw.gold || 0;
     const levels = S.gainXp(p, rw.xp || 0);
     const items = [];
@@ -613,11 +685,15 @@
       const item = A.MATERIALS[it.id] || A.CONSUMABLES[it.id] ? S.makeStack(it.id, it.qty) : S.makeStack(it.id, it.qty);
       if (S.addItem(p, item, it.qty)) items.push(item);
     });
+
+    // Efeitos de conclusão da missão.
+    if (base.onComplete) applyEffects(base.onComplete);
+    if (base.effects) applyEffects(base.effects);
+
     p.achStats.quests++;
-    // Próxima missão principal: o motor de campanha respeita capítulo e nível.
     let next = null;
-    if (d.id.startsWith('q')) {
-      const idx = A.QUESTS.findIndex(q => q.id === d.id);
+    if (base.id.startsWith('q')) {
+      const idx = A.QUESTS.findIndex(q => q.id === base.id);
       p.mainIndex = Math.max(p.mainIndex || 0, idx + 1);
       next = S.syncCampaign(p, false);
     }
@@ -834,7 +910,9 @@
     p.inventory = p.inventory || [];
     p.bank = p.bank || [];
     p.quests = p.quests || {};
-    p.achievements = p.achievements || {};
+    Object.keys(p.quests).forEach(id => {
+      if (p.quests[id] && p.quests[id].stage == null) p.quests[id].stage = 0;
+    });    p.achievements = p.achievements || {};
     p.look = p.look || {};
     p.pos = p.pos || { x: 73 * A.T + 16, y: 56 * A.T + 16 };
 

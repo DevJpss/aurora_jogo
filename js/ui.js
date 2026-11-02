@@ -1587,9 +1587,12 @@
     const pr = A.sys.questProgress(p, q.id);
     const rw = d.reward || d.rewards || {};
     let itemsTxt = (rw.items || []).map(i => (A.MATERIALS[i.id] || A.CONSUMABLES[i.id] || {}).name || i.id).join(', ');
+    const stageIdx = (A.sys.questStageIndex ? A.sys.questStageIndex(p, d.id) : 0);
+    const stageDef = (d.stages && d.stages[stageIdx]) ? d.stages[stageIdx] : null;
+    const desc = (stageDef && stageDef.desc) ? ('Etapa ' + (stageIdx + 1) + '/' + d.stages.length + ': ' + stageDef.desc) : d.desc;
     return '<div class="quest-card trackable ' + (pr.done ? 'ready' : '') + '" data-act="quest-track" data-id="' + d.id + '" title="Clique para rastrear e ir até o objetivo">' +
       '<div class="qc-top"><span class="qc-title">' + esc(d.title) + '</span><span class="qc-type">' + (d.id.startsWith('q') ? 'Principal' : 'Caçada') + '</span></div>' +
-      '<div class="qc-desc">' + esc(d.desc) + '</div>' + progressBar(pr.cur, pr.need) +
+      '<div class="qc-desc">' + esc(desc) + '</div>' + progressBar(pr.cur, pr.need) +
       '<div class="qc-reward"><span>Ouro: <b>' + (rw.gold || 0) + '</b></span><span>XP: <b>' + (rw.xp || 0) + '</b></span>' + (itemsTxt ? '<span>Itens: <b>' + esc(itemsTxt) + '</b></span>' : '') + '</div>' +
       '<div class="qc-actions"><button class="btn small" data-act="quest-track" data-id="' + d.id + '">Ir até</button>' +
         '<button class="btn small ' + (pr.done ? 'btn-primary' : '') + '" data-act="quest-turnin" data-id="' + d.id + '" ' + (pr.done ? '' : 'disabled') + '>' + (pr.done ? 'Entregar recompensa' : 'Em andamento') + '</button></div>' +
