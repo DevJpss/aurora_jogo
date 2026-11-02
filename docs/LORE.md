@@ -1,4 +1,4 @@
-# Crônicas de Aurora - C@none (extraído do código)
+# Crônicas de Aurora - Cânone (extraído do código)
 
 Este documento lista apenas o que o código declara. Nada foi inventado. Cada afirmação
 cita `arquivo:linha`. Fonte de verdade: o código; este arquivo apenas indexa.
@@ -35,14 +35,14 @@ Eclipse) e masmorras (Cripta, Cidadela).
 | costa | Costa Partida | Nv 5-12 | nao | nao |
 | floresta | Floresta de Ébano | Nv 8-16 | nao | nao |
 | ruinas | Ruínas de Solmar | Nv 16-24 | nao | nao |
-| pantano | Pántano Cinzento | Nv 24-38 | nao | nao |
+| pantano | Pântano Cinzento | Nv 24-38 | nao | nao |
 | picos | Picos de Gelo | Nv 38-58 | nao | nao |
 | cripta | Cripta do Eclipse | Nv 18+ | nao | sim |
 | cidadela | Cidadela do Eclipse | Nv 44+ | nao | sim |
 
 ---
 
-## 3. NPCs (A.NPCS, `data.js` 214-224) e di@logos (`ui.js` 1882-1892)
+## 3. NPCs (A.NPCS, `data.js` 214-224) e diálogos (`ui.js` 1882-1892)
 
 | id | Nome | Papel | Posição (tiles) | Marker |
 |---|---|---|---|---|
@@ -56,16 +56,16 @@ Eclipse) e masmorras (Cripta, Cidadela).
 | sella | Vigia Sella | Guardiã dos Picos | (173,24) | quest |
 | quadro | Quadro de Recompensas | Missões diárias | (74,43) | board (prop) |
 
-Di@logos (greet):
+Diálogos (greet):
 - aldric: "Aurora precisa de você, {nome}. O Eclipse avança e os monstros ficam mais ousados a cada noite. Está pronto para escrever seu nome na história?" (`ui.js` 1883).
 - orla: "Poções fresquinhas, ervas do campo e o melhor preço da vila! Não saia para a floresta sem uma poção de vida, querido." (`ui.js` 1884).
 - brann: "Aç~o bom é aç~o quente. Traga minério e couro que eu forjo algo que aguente o tranco. Ou compre pronto, se tiver pressa." (`ui.js` 1885).
 - elara: "Sua postura melhorou. Ainda há muito a aprender sobre o fluxo de mana e o timing dos golpes. Quer revisar suas habilidades?" (`ui.js` 1886).
-- nara: "Sinto suas feridas daqui. Deixe-me cuidar de você - a luz de Aurora não abandona ningu@m." (`ui.js` 1887).
+- nara: "Sinto suas feridas daqui. Deixe-me cuidar de você - a luz de Aurora não abandona ninguém." (`ui.js` 1887).
 - banco: "Segurança em primeiro lugar. Seus itens ficam guardados aqui, longe dos perigos do mundo." (`ui.js` 1888).
 - arauto: "A Cripta e a Cidadela do Eclipse se abrem para os corajosos. Lá embaixo, antigos heróis guardam o selo. Diga-me: você está pronto para o nível 18?" (`ui.js` 1889).
 - sella: "O frio não perdoa, mas a Vigília dos Picos resiste. Se precisar de missões ou de um ponto seguro, estou aqui." (`ui.js` 1890).
-- quadro: "Recompensas diárias para quem mant@m as estradas seguras. Confira os contratos de hoje." (`ui.js` 1891).
+- quadro: "Recompensas diárias para quem mantém as estradas seguras. Confira os contratos de hoje." (`ui.js` 1891).
 
 Sella é a única NPC fora da vila (Picos de Gelo, x=173,y=24) (`data.js` 222).
 
@@ -80,7 +80,7 @@ Sella é a única NPC fora da vila (Picos de Gelo, x=173,y=24) (`data.js` 222).
 | 1 | O Despertar da Aurora | Campos Verdes - Nv 1-8 | campos | "A vila precisa de um novo guardião..." (`data.js` 379) |
 | 2 | Sombras na Costa | Costa Partida e Floresta de Ébano - Nv 8-18 | floresta | "Contrabandistas e goblins se movem sob a copa das árvores. O primeiro selo de Aurora foi quebrado." (`data.js` 381-382) |
 | 3 | O Selo de Solmar | Ruínas e Cripta do Eclipse - Nv 18-28 | ruinas | "As ruínas guardam a primeira masmorra..." (`data.js` 384-385) |
-| 4 | Vozes do Pántano | Pántano Cinzento - Nv 28-38 | pantano | "A bruma sussurra nomes antigos. Bruxas e espectros mant@m o segundo selo sob o lodo." (`data.js` 387-388) |
+| 4 | Vozes do Pântano | Pântano Cinzento - Nv 28-38 | pantano | "A bruma sussurra nomes antigos. Bruxas e espectros mantêm o segundo selo sob o lodo." (`data.js` 387-388) |
 | 5 | Os Picos de Gelo | Picos de Gelo - Nv 38-44 | picos | "A última estrada leva ao norte congelado. Algo antigo despertou sob a geleira." (`data.js` 390-391) |
 | 6 | A Cidadela do Eclipse | Cidadela do Eclipse - Nv 44-52 | cidadela | "A fortaleza do Eclipse se revela..." (`data.js` 393-394) |
 | 7 | A Coroa Partida | Geleiras e Cidadela - Nv 52-58 | picos | "A Rainha da Geada protege a coroa partida. Sem ela, o Arauto não pode ser derrotado." (`data.js` 396-397) |
@@ -90,7 +90,7 @@ Missões notáveis:
 - q4 "O Caranguejo Ancião": boss crab_king na Costa Partida (`data.js` 250-252).
 - q10 "O Coração de Ébano": boss boss_treant na Floresta (`data.js` 270-272).
 - q13/q14: Cripta do Eclipse, 8 Esqueletos e boss_rei "O Rei Esquecido" (`data.js` 281-286).
-- q20 "A Rainha do Lodo": boss boss_lodo no Pántano (`data.js` 304-306).
+- q20 "A Rainha do Lodo": boss boss_lodo no Pântano (`data.js` 304-306).
 - q25 "O Rei do Gelo": boss boss_ice nos Picos (`data.js` 321-323).
 - q29 "O Senhor da Cidadela": boss boss_cidadela na Cidadela (`data.js` 335-337).
 - q35 "A Rainha da Geada": boss boss_rainha nos Picos (`data.js` 355-357).
@@ -156,7 +156,7 @@ vila, campos, costa, floresta, ruinas, pantano, picos (7 pontos). Conquista "Exp
 
 ---
 
-## 11. Notas de consisténcia
+## 11. Notas de consistência
 
 - README fala em 7 regiões, mas `data.js` tem 9 zonas (inclui Picos de Gelo e Cidadela do Eclipse) (`PROJECT_MAP.md` seção 11).
 - `index.html` mostra v2.0.0, `A.VERSION` = 2.2.0 (`PROJECT_MAP.md` seção 1).

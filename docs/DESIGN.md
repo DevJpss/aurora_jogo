@@ -1,11 +1,11 @@
 # Crônicas de Aurora - Documento de Design
 
 Fonte de verdade para decisões de design e arquitetura do jogo. As decisões do dono estão
-listadas com identificador estável (`D1`..`D7`) para referéncia em código, commits e roadmap.
-O código vence em caso de divergéncia; este documento deve ser atualizado quando uma decisão
+listadas com identificador estável (`D1`..`D7`) para referência em código, commits e roadmap.
+O código vence em caso de divergência; este documento deve ser atualizado quando uma decisão
 mudar.
 
-Companion: `docs/LORE.md` (c@none extraído do código) e `docs/ROADMAP.md` (plano de entrega).
+Companion: `docs/LORE.md` (cânone extraído do código) e `docs/ROADMAP.md` (plano de entrega).
 
 ---
 
@@ -26,7 +26,7 @@ com duas masmorras e endgame (fendas, raid, arena, faccões, temporada).
 | D2 | Auto-hunt (tecla `R`) desbloqueado por marco da história; serve de grind de XP antes e depois do nível 60. | Hoje `R` está livre desde o nível 1 (`game.js` 1643/1675). |
 | D3 | Depois do 60: um segundo nível de personagem (nome a definir) que continua subindo, com um pouco de status por nível; o XP excedente vai para ele. | `S.gainXp` (`systems.js` 131) hoje trava em `p.level < 60`. |
 | D4 | +3 classes: Ladino (adagas), Monge (punhos), Bardo (instrumento). | Hoje existem 4 classes (`data.js` 35-68). |
-| D5 | Evolução nos níveis 20, 40 e 60, em eventos da história: no 20 o jogador escolhe 1 de 3 linhas; no 40 e no 60 avança em linha reta dentro dela (7 classes x 3 linhas x 3 est@gios). | Hoje não há sistema de evolução de classe. |
+| D5 | Evolução nos níveis 20, 40 e 60, em eventos da história: no 20 o jogador escolhe 1 de 3 linhas; no 40 e no 60 avança em linha reta dentro dela (7 classes x 3 linhas x 3 estágios). | Hoje não há sistema de evolução de classe. |
 | D6 | Saves atuais descartáveis (sem migração). | `A.SAVE_VERSION = 4` (`data.js` 18-21); saves antigos podem ser ignorados. |
 | D7 | Missões com NPCs no local, que podem reaparecer em outras áreas por motivo narrativo. | Hoje a entrega exige voltar ao NPC giver (ver `ROADMAP.md`). |
 
@@ -62,16 +62,16 @@ Regra: manter separação conteúdo/mundo/sistemas/UI/loop. Nenhuma regra de gam
 
 - Nome e curva do nível pós-60 (D3): limite máximo ou retornos decrescentes? Quanto de status por nível?
 - Como o Bardo funciona em jogo solo (D4): suporte sem grupo real; buffs próprios? dano por música?
-- O que ocupa o slot de arma do Monge (D4): punhos como arma base, ou slot vazio com bónus de mãos livres?
+- O que ocupa o slot de arma do Monge (D4): punhos como arma base, ou slot vazio com bônus de mãos livres?
 - Em que capítulo ficam o desbloqueio do auto-hunt (D2) e as evoluções (D5) nos níveis 20, 40 e 60?
 - Nome do segundo nível de personagem (D3).
 - Se missões com NPCs no local (D7) exigem reescrita do rastreio ou só do ponto de entrega.
 
 ---
 
-## 6. Referéncias
+## 6. Referências
 
 - `PROJECT_MAP.md` - áncoras e propriedade por agente.
-- `docs/LORE.md` - c@none atual extraído do código.
+- `docs/LORE.md` - cânone atual extraído do código.
 - `docs/ROADMAP.md` - plano de entrega por frentes.
 - `AGENTS.md` - fluxo de tarefa e validação.

@@ -1,7 +1,7 @@
 # Crônicas de Aurora - Roadmap de entrega
 
 Plano de entrega por frentes, com arquivos, riscos e testes que vão quebrar de propósito.
-Complementa `docs/DESIGN.md` (decisões D1-D7) e `docs/LORE.md` (c@none).
+Complementa `docs/DESIGN.md` (decisões D1-D7) e `docs/LORE.md` (cânone).
 
 ---
 
@@ -80,7 +80,7 @@ Estimativa de ajuste:
 
 ### Frente C - Auto-hunt desbloqueado por marco (D2)
 - Objetivo: gating de R por história; servir de grind antes e depois do 60.
-- Arquivos: `js/game.js` (setAutoHunt, toggleAutoHunt, hotkey R), `js/ui.js` (botáo AUTO, HUD), `js/systems.js` (applyUnlocks), `js/data.js` (unlocks).
+- Arquivos: `js/game.js` (setAutoHunt, toggleAutoHunt, hotkey R), `js/ui.js` (botão AUTO, HUD), `js/systems.js` (applyUnlocks), `js/data.js` (unlocks).
 - Riscos: jogadores acostumados com R livre; testes de AUTO.
 - Testes que vão quebrar de propósito: `tests/navigation.js` (AUTO contorna taverna), `tests/combat.js` (AUTO usa esquiva), `tests/smoke.js` se HUD mudar.
 
