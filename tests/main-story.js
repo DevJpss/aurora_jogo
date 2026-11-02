@@ -127,6 +127,31 @@ const { open, boot, ok, fail, summary } = require('./helpers');
     if (manif.zone === 'vila' && !manif.hasNpcAtSpot) ok('manifestação restrita à praça e sem interação');
     else fail('manifestação: ' + JSON.stringify(manif));
 
+    // Novas missões do arco (Etapa 7).
+    const hasNew = await page.evaluate(() => ['arc1_q4','arc1_q5','arc1_q6'].every(id => !!A.sys.questById(id)));
+    if (hasNew) ok('missões arc1_q4 a arc1_q6 cadastradas');
+    else fail('missões novas faltando');
+
+    // Encadeamento das novas missões.
+    const chain2 = await page.evaluate(() => {
+      const p = A.sys.blankCharacter({ cls: 'warrior', name: 'Chain2', server: 'aurora' });
+      if (!p.quests.arc1_q3) p.quests.arc1_q3 = { progress: 0, done: false, claimed: false, stage: 0 };
+      p.quests.arc1_q3.claimed = true;
+      p.quests.arc1_q3.done = true;
+      const r4 = A.sys.startQuest(p, 'arc1_q4');
+      const r5before = A.sys.startQuest(p, 'arc1_q5');
+      // conclui arc1_q4
+      p.quests.arc1_q4 = { progress: 0, done: false, claimed: false, stage: 0 };
+      A.sys.talkTo(p, 'tomas');
+      A.sys.turnInQuest(p, 'arc1_q4');
+      A.sys.questEvent(p, 'explore', 'campos', 1);
+      A.sys.turnInQuest(p, 'arc1_q4');
+      const r5after = A.sys.startQuest(p, 'arc1_q5');
+      return { r4, r5before, r5after };
+    });
+    if (chain2.r4 !== false && chain2.r5before === false && chain2.r5after !== false) ok('encadeamento de arc1_q4/arc1_q5 funciona');
+    else fail('encadeamento2: ' + JSON.stringify(chain2));
+
     // Persistência.
     const persisted = await page.evaluate(() => {
       A.game.save();

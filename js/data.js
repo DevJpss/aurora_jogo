@@ -232,7 +232,7 @@ window.A = window.A || {};
     schedule: [ { from: 6, to: 18, x: 80, y: 44 }, { from: 18, to: 6, x: 78, y: 48 } ] },
   { id: 'liora', name: 'Liora', role: 'Curandeira', x: 66, y: 40, look: { outfit: '#7a9a6a', skin: '#f6d7b0', hair: '#c46a3a', robe: true }, marker: 'heal', kind: 'citizen', dialogueId: 'liora',
     schedule: [ { from: 8, to: 20, x: 66, y: 40 }, { from: 20, to: 8, x: 64, y: 44 } ] },
-  { id: 'tomas', name: 'Tomás', role: 'Agricultor', x: 56, y: 60, look: { outfit: '#8a7a4a', skin: '#c98f6a', hair: '#3a2a1a', hat: '#5a4a2a' }, marker: 'quest', kind: 'citizen',
+  { id: 'tomas', name: 'Tomás', role: 'Agricultor', x: 56, y: 60, look: { outfit: '#8a7a4a', skin: '#c98f6a', hair: '#3a2a1a', hat: '#5a4a2a' }, marker: 'quest', kind: 'citizen', dialogueId: 'tomas',
     schedule: [ { from: 5, to: 17, x: 56, y: 60 }, { from: 17, to: 5, x: 58, y: 56 } ] },
   { id: 'nilo', name: 'Nilo', role: 'Mensageiro', x: 70, y: 52, look: { outfit: '#4a7a9a', skin: '#e8c8a8', hair: '#d8e8f4', hat: '#2a4a6a' }, marker: 'quest', kind: 'citizen',
     schedule: [ { from: 6, to: 12, x: 70, y: 52 }, { from: 12, to: 18, x: 76, y: 46 }, { from: 18, to: 6, x: 72, y: 54 } ] },
@@ -484,6 +484,31 @@ window.A = window.A || {};
       reward: { gold: 180, xp: 320 } }
   ];
 
+  // Continuação do primeiro arco (Etapa 7).
+  A.STORY_QUESTS.push(
+    { id: 'arc1_q4', title: 'Vestígios nos Campos Verdes', giver: 'tomas', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q3'] },
+      desc: 'Tomás notou comportamentos estranhos nos Campos Verdes. Fale com ele.',
+      stages: [
+        { id: 'arc1_q4_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'tomas', desc: 'Fale com Tomás sobre os campos.' },
+        { id: 'arc1_q4_s2', type: 'explore', need: 1, target: 'campos', zone: 'campos', desc: 'Observe os Campos Verdes e procure marcas incomuns.', onComplete: [{ setFlag: 'arc1_vestigios_campos' }] }
+      ],
+      reward: { gold: 200, xp: 360 } },
+    { id: 'arc1_q5', title: 'O Marco Esquecido', giver: 'irene', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q4'] },
+      desc: 'Irene menciona um marco antigo nas ruínas. Investigue.',
+      stages: [
+        { id: 'arc1_q5_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre o marco.' },
+        { id: 'arc1_q5_s2', type: 'explore', need: 1, target: 'ruinas', zone: 'ruinas', desc: 'Explore as Ruínas de Solmar e procure o marco.', onComplete: [{ setFlag: 'arc1_marco_antigo', learn: 'marco_antigo', npc: 'irene' }] }
+      ],
+      reward: { gold: 220, xp: 400 } },
+    { id: 'arc1_q6', title: 'Aquilo que Permaneceu', giver: 'marta', type: 'talk', need: 1, target: '', zone: 'vila', prereq: { quests: ['arc1_q5'] },
+      desc: 'Retorne à vila com as descobertas e converse com os moradores.',
+      stages: [
+        { id: 'arc1_q6_s1', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'marta', desc: 'Fale com Marta sobre as descobertas.' },
+        { id: 'arc1_q6_s2', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'liora', desc: 'Fale com Liora sobre as descobertas.' },
+        { id: 'arc1_q6_s3', type: 'talk', need: 1, target: '', zone: 'vila', npc: 'irene', desc: 'Fale com Irene sobre os registros.', onComplete: [{ setFlag: 'arc1_primeiro_arco' }] }
+      ],
+      reward: { gold: 260, xp: 480 } }
+  );
   /* ------------------------------------------------------------------ */
   /* CRIAÇÃO                                                             */
   /* ------------------------------------------------------------------ */

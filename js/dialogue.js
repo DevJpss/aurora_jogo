@@ -69,6 +69,7 @@
         { label: 'O que você ouviu?', next: 'detalhe' },
         { label: 'Talvez seja só o vento.', next: 'vento' },
         { label: 'Voltei sobre os sussurros.', next: 'depois', condition: { hasFlag: 'arc1_investigando' } },
+        { label: 'Sobre as descobertas recentes.', next: 'descobertas', condition: { hasFlag: 'arc1_primeiro_arco' } },
         { label: 'Encerrar conversa.', end: true, effect: { remember: 'marta_sussurros', changeRelation: 1 } }
       ]
     },
@@ -83,6 +84,12 @@
       text: 'Então não era só imaginação. A luz some, mas o frio fica. Cuidado ao anoitecer.',
       options: [
         { label: 'Obrigado, Marta.', next: 'start' },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    },
+    descobertas: {
+      text: 'Os moradores falam de marcas e luzes. Algo antigo parece ter sido esquecido, não apagado.',
+      options: [
         { label: 'Encerrar conversa.', end: true }
       ]
     },
@@ -175,6 +182,29 @@
       text: 'O pergaminho está gasto, mas os cinco nomes permanecem. Eles podem ser pistas, ou apenas ecos.',
       options: [
         { label: 'Obrigado, Irene.', next: 'start', effect: { startQuest: 'arc1_q3', learn: 'cinco_nomes_registro', npc: 'irene' } },
+        { label: 'Encerrar conversa.', end: true }
+      ]
+    }
+  };
+  A.DIALOGUES.tomas = {
+    start: {
+      text: 'Os campos não estão como antes. Os animais evitam uma área e o silêncio pesa.',
+      options: [
+        { label: 'O que voce notou?', next: 'detalhe' },
+        { label: 'Talvez seja so o vento.', next: 'vento' },
+        { label: 'Encerrar conversa.', end: true, effect: { remember: 'tomas_campos', changeRelation: 1 } }
+      ]
+    },
+    detalhe: {
+      text: 'Marcas no chão, como se algo tivesse passado, mas sem pegadas. E uma luz fraca ao amanhecer.',
+      options: [
+        { label: 'Vou observar os campos.', next: 'start', effect: { startQuest: 'arc1_q4' } },
+        { label: 'Encerrar conversa.', end: true, effect: { remember: 'tomas_campos' } }
+      ]
+    },
+    vento: {
+      text: 'Vento não deixa marcas. Fique atento.',
+      options: [
         { label: 'Encerrar conversa.', end: true }
       ]
     }
